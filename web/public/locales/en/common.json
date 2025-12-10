@@ -1,0 +1,99 @@
+{
+  "navigation": {
+    "dashboard": "Dashboard",
+    "apiKeys": "API Keys",
+    "apiDocumentation": "API Documentation",
+    "logout": "Logout",
+    "logoutLocal": "Logout (Local)"
+  },
+  "language": {
+    "english": "English",
+    "spanish": "Español",
+    "selectLanguage": "Select Language",
+    "changeLanguage": "Change Language"
+  },
+  "user": {
+    "unknownUser": "Unknown User",
+    "basicAuthUser": "Basic Auth User",
+    "oidcUser": "OIDC User",
+    "user": "User",
+    "apiKey": "API Key: {{keyName}}"
+  },
+  "buttons": {
+    "create": "Create",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "save": "Save",
+    "close": "Close",
+    "confirm": "Confirm",
+    "retry": "Retry",
+    "clear": "Clear",
+    "copy": "Copy",
+    "move": "Move",
+    "rename": "Rename",
+    "upload": "Upload",
+    "download": "Download",
+    "search": "Search"
+  },
+  "status": {
+    "loading": "Loading...",
+    "success": "Success",
+    "error": "Error",
+    "pending": "Pending",
+    "completed": "Completed",
+    "failed": "Failed"
+  },
+  "actions": {
+    "copyToClipboard": "Copy to clipboard",
+    "copyFullChecksum": "Copy full checksum",
+    "backToFiles": "Back to Files",
+    "clearSelection": "Clear selection",
+    "selectAll": "Select All",
+    "retryUpload": "Retry upload",
+    "showUploadSection": "Show Upload Section",
+    "hideUploadSection": "Hide Upload Section",
+    "installApp": "Install {{appName}} as an app",
+    "clearSelectionTooltip": "Clear selection",
+    "deleteSelectedTooltip": "Delete {{count}} selected files"
+  },
+  "messages": {
+    "noResultsFound": "No Results Found",
+    "searchFailed": "Search Failed",
+    "uploadFailed": "Upload failed",
+    "deleteFailed": "Delete failed",
+    "operationSuccessful": "Operation completed successfully",
+    "operationFailed": "Operation failed",
+    "confirmAction": "Are you sure?",
+    "cannotUndoAction": "This action cannot be undone.",
+    "confirmActionFallback": "Confirm Action",
+    "areYouSureFallback": "Are you sure?",
+    "confirmFallback": "Confirm"
+  },
+  "landing": {
+    "clickToAccessFiles": "Click to access file index",
+    "authenticationRequired": "Access to resources requires proper authentication",
+    "contactSupport": "Contact Support"
+  },
+  "error": {
+    "somethingWentWrong": "Something went wrong",
+    "unexpectedErrorOccurred": "An unexpected error occurred. Please try refreshing the page or return to the home page.",
+    "refreshPage": "Refresh Page",
+    "goHome": "Go Home",
+    "errorDetailsDevelopment": "Error Details (Development)"
+  },
+  "pwa": {
+    "installApp": "Install App",
+    "installWebTerminalAsApp": "Install {{appName}} as an app",
+    "offline": "Offline",
+    "uploadsQueuedForSync": "{{count}} uploads queued for sync",
+    "offlineMode": "Offline Mode",
+    "youreOfflineMessage": "You're offline. Some features may be limited. Uploads will be queued for when you're back online.",
+    "updateAvailable": "Update Available",
+    "newVersionAvailable": "A new version of {{appName}} is available.",
+    "refresh": "Refresh"
+  },
+  "breadcrumbs": {
+    "web-terminal": "Web-Terminal",
+    "home": "Home"
+  }
+}

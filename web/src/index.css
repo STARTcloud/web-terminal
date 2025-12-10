@@ -1,0 +1,819 @@
+/* Import Bootstrap Icons */
+@import "bootstrap-icons/font/bootstrap-icons.css";
+
+/* Global styles for Web-Terminal application */
+body {
+  margin: 0;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu",
+    "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #212529;
+  color: #ffffff;
+}
+
+code {
+  font-family:
+    source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+}
+
+/* Dark theme overrides */
+.bg-dark {
+  background-color: #212529 !important;
+}
+
+.text-light {
+  color: #ffffff !important;
+}
+
+/* Main content container with proper margins */
+.main-content {
+  flex: 1;
+}
+
+/* Layout container styling - moved from inline styles */
+.layout-container {
+  max-width: 80%; /* Increased from 70% to make content about 10% wider */
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Custom scrollbar for dark theme */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #343a40;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #6c757d;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #adb5bd;
+}
+
+/* Upload zone styles */
+.upload-drop-zone {
+  border: 3px dashed #811937;
+  border-radius: 12px;
+  padding: 40px 20px;
+  margin: 20px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 18px;
+  cursor: pointer;
+  color: #adb5bd;
+  background-color: rgba(52, 58, 64, 0.3);
+  transition: all 0.3s ease;
+  min-height: 120px;
+}
+
+.upload-drop-zone:hover {
+  border-color: #811937;
+  background-color: rgba(129, 25, 55, 0.1);
+  color: #fff;
+}
+
+.upload-drop-zone--over {
+  border-style: solid;
+  border-color: #811937;
+  background-color: rgba(129, 25, 55, 0.2);
+  color: #fff;
+}
+
+.upload-drop-zone__input {
+  display: none;
+}
+
+.upload-drop-zone__prompt {
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+/* File and folder icon styles */
+.file-icon,
+.folder-icon {
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    color 0.2s ease;
+}
+
+.file-icon:hover,
+.folder-icon:hover {
+  transform: scale(1.2);
+  color: #198754 !important;
+}
+
+.copy-animation {
+  transform: scale(1.3) !important;
+  color: #198754 !important;
+}
+
+.long-press-animation {
+  transform: scale(1.4) !important;
+  color: #dc3545 !important;
+}
+
+/* Table styles */
+.table {
+  color: #fff;
+}
+
+.table td {
+  vertical-align: middle;
+}
+
+/* File table styling */
+.table-dark {
+  --bs-table-bg: #2d3748;
+  --bs-table-border-color: #4a5568;
+  --bs-table-color: #f8f9fa;
+}
+
+.table-dark td,
+.table-dark th {
+  border-color: #4a5568;
+  color: #f8f9fa;
+  background-color: #2d3748;
+}
+
+/* Ensure table headers have proper contrast */
+.table-dark thead th {
+  background-color: #1a202c !important;
+  color: #ffffff !important;
+  border-bottom: 2px solid #4a5568;
+}
+
+.table-dark a {
+  color: #90cdf4;
+}
+
+.table-dark a:hover {
+  color: #63b3ed;
+}
+
+.table-dark .text-muted {
+  color: #adb5bd !important;
+}
+
+.checksum {
+  cursor: pointer;
+}
+
+.checksum:hover {
+  text-decoration: underline;
+}
+
+/* Remove rounded corners from card containers used for tables */
+.card {
+  border: none !important;
+  border-radius: 0 !important;
+}
+
+/* Ensure folder icons are outlined, not filled */
+.bi-folder2::before {
+  content: "\f1c1" !important; /* Bootstrap folder2 icon (outlined) */
+}
+
+/* Table column width adjustments - fixed layout for consistent sizing */
+.table {
+  table-layout: fixed;
+}
+
+.table th:nth-child(1), /* Checkbox column */
+.table td:nth-child(1) {
+  width: 5%;
+  min-width: 50px;
+}
+
+.table th:nth-child(2), /* Name column */
+.table td:nth-child(2) {
+  width: 29.25%; /* Reduced by 10% from 32.5% */
+  min-width: 200px;
+}
+
+.table th:nth-child(3), /* Type column */
+.table td:nth-child(3) {
+  width: 10%;
+  min-width: 80px;
+}
+
+.table th:nth-child(4), /* Size column */
+.table td:nth-child(4) {
+  width: 12%;
+  min-width: 80px;
+}
+
+.table th:nth-child(5), /* Modified column */
+.table td:nth-child(5) {
+  width: 18%;
+  min-width: 120px;
+}
+
+.table th:nth-child(6), /* Checksum column */
+.table td:nth-child(6) {
+  width: 22.5%; /* Increased by 7.5% from 15% */
+  min-width: 150px;
+}
+
+.table th:nth-child(7), /* Actions column */
+.table td:nth-child(7) {
+  width: 8.25%;
+  min-width: 120px;
+}
+
+/* Improved striped row styling for better contrast */
+.table-striped > tbody > tr:nth-of-type(odd) > td {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+.table-striped > tbody > tr:nth-of-type(even) > td {
+  background-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Input placeholder styling for dark theme */
+.form-control::placeholder {
+  color: #adb5bd !important;
+  opacity: 1;
+}
+
+.form-control:focus::placeholder {
+  color: #6c757d !important;
+}
+
+/* Breadcrumb styles */
+.breadcrumb {
+  background-color: transparent;
+  margin-bottom: 0;
+}
+
+/* Drag and drop styles for parent directory */
+.parent-directory-row {
+  transition: background-color 0.2s ease;
+}
+
+.parent-directory-row.drag-over {
+  background-color: rgba(129, 25, 55, 0.2) !important;
+  border: 2px dashed #811937;
+}
+
+.parent-directory-row:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.breadcrumb-item > a {
+  color: #6c757d;
+  text-decoration: none;
+}
+
+.breadcrumb-item > a:hover {
+  color: #fff;
+}
+
+.breadcrumb-item.active {
+  color: #fff;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+  color: #6c757d;
+}
+
+/* API Keys component styles - consolidated from api-keys.css */
+.expired {
+  opacity: 0.6;
+}
+
+.key-preview {
+  font-family: monospace;
+}
+
+.api-keys-table .table td {
+  vertical-align: middle;
+}
+
+.api-keys-table .badge {
+  font-size: 0.75em;
+}
+
+/* Column width adjustments - final user feedback: key preview 20% narrower, space to last used */
+.api-keys-table .table th:nth-child(1),
+.api-keys-table .table td:nth-child(1) {
+  width: 5% !important;
+} /* Checkbox column */
+.api-keys-table .table th:nth-child(2),
+.api-keys-table .table td:nth-child(2) {
+  width: 20% !important;
+} /* Name */
+.api-keys-table .table th:nth-child(3),
+.api-keys-table .table td:nth-child(3) {
+  width: 8% !important;
+} /* Key Preview - 20% narrower (was 10%) */
+.api-keys-table .table th:nth-child(4),
+.api-keys-table .table td:nth-child(4) {
+  width: 22% !important;
+} /* Permissions */
+.api-keys-table .table th:nth-child(5),
+.api-keys-table .table td:nth-child(5) {
+  width: 17% !important;
+} /* Expires */
+.api-keys-table .table th:nth-child(6),
+.api-keys-table .table td:nth-child(6) {
+  width: 23% !important;
+} /* Last Used - gets extra 2% from key preview */
+.api-keys-table .table th:nth-child(7),
+.api-keys-table .table td:nth-child(7) {
+  width: 5% !important;
+} /* Actions */
+
+/* Ensure proper spacing between permission badges */
+.api-keys-table .badge {
+  margin-right: 0.25rem !important;
+  display: inline-block !important;
+}
+
+.api-keys-table .badge:last-child {
+  margin-right: 0 !important;
+}
+
+/* Color-coded permission badges */
+.api-keys-table .badge.permission-delete {
+  background-color: #dc3545 !important; /* Red for delete */
+}
+
+.api-keys-table .badge.permission-uploads,
+.api-keys-table .badge.permission-write {
+  background-color: #198754 !important; /* Green for uploads/write */
+}
+
+.api-keys-table .badge.permission-downloads,
+.api-keys-table .badge.permission-read {
+  background-color: #0d6efd !important; /* Blue for downloads/read */
+}
+
+/* Login page styles */
+body {
+  background-color: #212529;
+  color: #fff;
+  min-height: 100vh;
+}
+
+.login-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-card {
+  background-color: #343a40;
+  border: 1px solid #495057;
+  border-radius: 0.5rem;
+  max-width: 400px;
+  width: 100%;
+  padding: 1.5rem;
+}
+
+.btn-oidc {
+  width: 100%;
+  margin-bottom: 0.5rem;
+}
+
+.divider {
+  text-align: center;
+  padding: 0.5rem 0;
+  position: relative;
+}
+
+.divider::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background-color: #6c757d;
+}
+
+.divider span {
+  background-color: #343a40;
+  padding: 0 1rem;
+  color: #6c757d;
+}
+
+.btn-login {
+  background-color: var(--login-primary-color, #811937);
+  border-color: var(--login-primary-color, #811937);
+  color: white;
+}
+
+.powered-by-text {
+  color: #6c757d;
+}
+
+/* Swagger UI Dark Theme Styles */
+.swagger-container {
+  color: #ffffff;
+  min-height: 100vh;
+}
+
+.swagger-ui {
+  background: #212529 !important;
+  color: #ffffff !important;
+}
+
+.swagger-ui .topbar {
+  display: none !important;
+}
+
+.swagger-ui .info {
+  margin: 20px 0 !important;
+  background: #2d3748 !important;
+  border: 1px solid #4a5568 !important;
+  border-radius: 8px !important;
+  padding: 16px !important;
+}
+
+.swagger-ui .swagger-servers-section {
+  background: #2d3748 !important;
+  border: 1px solid #4a5568 !important;
+  border-radius: 8px !important;
+}
+
+/* Make all text white in Swagger UI */
+.swagger-ui * {
+  color: #ffffff !important;
+}
+
+.swagger-ui .info .title,
+.swagger-ui .info .description,
+.swagger-ui .info .version,
+.swagger-ui .opblock-tag,
+.swagger-ui .opblock-summary-description,
+.swagger-ui .opblock-summary-path,
+.swagger-ui .parameter__name,
+.swagger-ui .parameter__type,
+.swagger-ui .response-col_status,
+.swagger-ui .response-col_description,
+.swagger-ui .model-title,
+.swagger-ui .prop-type,
+.swagger-ui .prop-format,
+.swagger-ui label,
+.swagger-ui select,
+.swagger-ui input,
+.swagger-ui textarea,
+.swagger-ui .servers label,
+.swagger-ui .auth-container label,
+.swagger-ui .modal-ux-content,
+.swagger-ui .modal-ux-content * {
+  color: #ffffff !important;
+}
+
+/* Override any muted text */
+.swagger-ui .text-muted,
+.swagger-ui small,
+.swagger-ui .info .description p,
+.swagger-ui .renderedMarkdown p {
+  color: #ffffff !important;
+}
+
+.swagger-ui .opblock {
+  background: #2d3748 !important;
+  border: 1px solid #4a5568 !important;
+  border-radius: 8px !important;
+  margin-bottom: 16px !important;
+}
+
+.swagger-ui .opblock .opblock-summary {
+  background: #2d3748 !important;
+  border: none !important;
+  border-radius: 8px !important;
+}
+
+.swagger-ui .btn {
+  background: #198754 !important;
+  border: 1px solid #198754 !important;
+  color: #fff !important;
+}
+
+.swagger-ui .btn:hover {
+  background: #157347 !important;
+  border-color: #157347 !important;
+}
+
+.swagger-ui input,
+.swagger-ui select,
+.swagger-ui textarea {
+  background: #374151 !important;
+  border: 1px solid #4a5568 !important;
+  color: #fff !important;
+}
+
+.swagger-ui .modal-ux {
+  background: rgba(0, 0, 0, 0.8) !important;
+}
+
+.swagger-ui .modal-ux-content {
+  background: #1a1d20 !important;
+  border: 1px solid #4a5568 !important;
+  border-radius: 8px !important;
+}
+
+/* Drag and drop styles for folders */
+.drag-over-folder {
+  background-color: rgba(25, 135, 84, 0.2) !important;
+  border: 2px dashed #198754 !important;
+  transition: all 0.2s ease;
+}
+
+.drag-over-folder td {
+  background-color: rgba(25, 135, 84, 0.1) !important;
+}
+
+/* Enhanced hover effects for drag targets */
+tr[data-can-accept-drop="true"]:hover {
+  background-color: rgba(25, 135, 84, 0.1) !important;
+  cursor: copy !important;
+}
+
+tr[data-can-accept-drop="true"]:hover td {
+  background-color: rgba(25, 135, 84, 0.1) !important;
+}
+
+/* Search results table column sizing */
+.search-results-table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+.search-results-table th:nth-child(1), /* Name column */
+.search-results-table td:nth-child(1) {
+  width: 22%;
+  min-width: 150px;
+  word-break: break-word;
+}
+
+.search-results-table th:nth-child(2), /* Path column */
+.search-results-table td:nth-child(2) {
+  width: 28%;
+  min-width: 120px;
+  word-break: break-all;
+}
+
+.search-results-table th:nth-child(3), /* Size column */
+.search-results-table td:nth-child(3) {
+  width: 10%;
+  min-width: 60px;
+}
+
+.search-results-table th:nth-child(4), /* Modified column */
+.search-results-table td:nth-child(4) {
+  width: 16%;
+  min-width: 100px;
+}
+
+.search-results-table th:nth-child(5), /* Checksum column */
+.search-results-table td:nth-child(5) {
+  width: 16%;
+  min-width: 100px;
+}
+
+.search-results-table th:nth-child(6), /* Actions column */
+.search-results-table td:nth-child(6) {
+  width: 8%;
+  min-width: 90px;
+}
+
+/* Ensure text wraps properly in search results */
+.search-results-table td {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+}
+
+.search-results-table td small {
+  word-break: break-all;
+}
+
+/* Spinning animation for checksum progress indicator */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Swagger UI Custom Components */
+.swagger-ui .custom-server-input {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex: 1;
+  min-width: 40vw;
+}
+
+.swagger-ui .custom-server-input input {
+  flex: 1;
+  height: 38px;
+  min-width: 0;
+}
+
+.swagger-ui .custom-server-input .btn {
+  background: transparent !important;
+  border: 2px solid #198754 !important;
+  color: #198754 !important;
+  flex-shrink: 0;
+}
+
+.swagger-ui .schemes-flex-container {
+  display: flex !important;
+  align-items: center !important;
+  gap: 16px !important;
+  flex-wrap: wrap !important;
+  margin: 16px !important;
+}
+
+.swagger-ui .modal-api-keys {
+  background: #2d3540;
+  border: 1px solid #495057;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  padding: 16px;
+}
+
+.swagger-ui .modal-api-keys h4 {
+  color: #fff !important;
+  margin: 0 0 12px 0;
+  font-size: 14px;
+}
+
+.swagger-ui .api-key-item {
+  background: #495057;
+  border: 1px solid #6c757d;
+  border-radius: 4px;
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  font-family: monospace;
+  font-size: 11px;
+  color: #fff;
+}
+
+.swagger-ui .api-key-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.swagger-ui .api-key-name {
+  color: #fff;
+  font-size: 12px;
+}
+
+.swagger-ui .api-key-info {
+  color: #adb5bd;
+  font-size: 10px;
+}
+
+.swagger-ui .api-key-fill-btn {
+  background: #198754;
+  border: none;
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 10px;
+}
+
+.swagger-ui .temp-key-section {
+  background: #495057;
+  border: 1px solid #6c757d;
+  border-radius: 4px;
+  padding: 12px;
+  text-align: center;
+}
+
+.swagger-ui .temp-key-label {
+  color: #fff;
+  font-size: 12px;
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+
+.swagger-ui .temp-key-btn {
+  background: #6f42c1;
+  border: none;
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 11px;
+}
+
+.swagger-ui .temp-key-btn.success {
+  background: #198754 !important;
+}
+
+.swagger-ui .temp-key-btn.error {
+  background: #c83232 !important;
+}
+
+.swagger-ui .api-key-fill-btn.success {
+  background: #198754 !important;
+}
+
+.swagger-ui .api-key-fill-btn.error {
+  background: #c83232 !important;
+}
+
+/* Server input button animations */
+.swagger-ui .custom-server-input .btn.success {
+  background: #198754 !important;
+  border-color: #198754 !important;
+  color: #fff !important;
+  transform: scale(1.1);
+}
+
+/* Hide servers title and fix layout */
+.swagger-ui .servers-title {
+  display: none !important;
+}
+
+.swagger-ui #servers {
+  height: 38px !important;
+}
+
+.swagger-ui .servers label {
+  margin: 0 !important;
+}
+
+.swagger-ui .no-keys-msg {
+  color: #adb5bd;
+  text-align: center;
+  padding: 16px;
+}
+
+.swagger-ui .api-key-separator {
+  border-color: #6c757d;
+  margin: 12px 0;
+}
+
+/* Fix Swagger UI auth button positioning */
+.swagger-ui .auth-container .wrapper {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+.swagger-ui .auth-container .wrapper section {
+  flex: 1 !important;
+}
+
+.swagger-ui .auth-btn-wrapper {
+  display: flex !important;
+  gap: 8px !important;
+  margin-left: auto !important;
+}
+
+.swagger-ui .auth-btn-wrapper .btn {
+  white-space: nowrap !important;
+}
+
+/* Loading and error state styles */
+.swagger-loading-spinner {
+  min-height: 400px;
+  background-color: #1a1d20;
+}
+
+.swagger-error-container {
+  background-color: #1a1d20;
+  color: #fff;
+  padding: 20px;
+}
+
+.swagger-ui .opblock .opblock-section-header {
+  align-items: center;
+  background: none !important;
+  box-shadow: 0 1px 2px #0000001a;
+  display: flex;
+  min-height: 50px;
+  padding: 8px 20px;
+}
+
+.swagger-ui .wrapper {
+  box-sizing: border-box;
+  margin: 0 auto;
+  max-width: 1460px;
+  padding: 0px !important;
+  width: 100%;
+}

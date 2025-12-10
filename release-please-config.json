@@ -1,0 +1,32 @@
+{
+  "bump-minor-pre-major": false,
+  "bump-patch-for-minor-pre-major": false,
+  "packages": {
+    ".": {
+      "release-type": "node",
+      "package-name": "web-terminal",
+      "include-component-in-tag": false,
+      "extra-files": [
+        {
+          "type": "json",
+          "path": "web/package.json",
+          "jsonpath": "$.version"
+        },
+        "app.js",
+        "config/swagger.js",
+        "packaging/config/version.yaml",
+        "packaging/omnios/man/web-terminal.yaml.5"
+      ],
+      "changelog-sections": [
+        { "type": "feat", "section": "Features", "hidden": false },
+        { "type": "fix", "section": "Bug Fixes", "hidden": false },
+        { "type": "chore", "section": "Miscellaneous", "hidden": true },
+        { "type": "docs", "section": "Documentation", "hidden": false },
+        { "type": "style", "section": "Miscellaneous", "hidden": true },
+        { "type": "refactor", "section": "Miscellaneous", "hidden": true },
+        { "type": "perf", "section": "Performance", "hidden": false },
+        { "type": "test", "section": "Miscellaneous", "hidden": true }
+      ]
+    }
+  }
+}

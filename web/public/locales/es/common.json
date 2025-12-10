@@ -1,0 +1,99 @@
+{
+  "navigation": {
+    "dashboard": "Panel de Control",
+    "apiKeys": "Claves API",
+    "apiDocumentation": "Documentación API",
+    "logout": "Cerrar Sesión",
+    "logoutLocal": "Cerrar Sesión (Local)"
+  },
+  "language": {
+    "english": "English",
+    "spanish": "Español",
+    "selectLanguage": "Seleccionar Idioma",
+    "changeLanguage": "Cambiar Idioma"
+  },
+  "user": {
+    "unknownUser": "Usuario Desconocido",
+    "basicAuthUser": "Usuario de Autenticación Básica",
+    "oidcUser": "Usuario OIDC",
+    "user": "Usuario",
+    "apiKey": "Clave API: {{keyName}}"
+  },
+  "buttons": {
+    "create": "Crear",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "save": "Guardar",
+    "close": "Cerrar",
+    "confirm": "Confirmar",
+    "retry": "Reintentar",
+    "clear": "Limpiar",
+    "copy": "Copiar",
+    "move": "Mover",
+    "rename": "Renombrar",
+    "upload": "Subir",
+    "download": "Descargar",
+    "search": "Buscar"
+  },
+  "status": {
+    "loading": "Cargando...",
+    "success": "Éxito",
+    "error": "Error",
+    "pending": "Pendiente",
+    "completed": "Completado",
+    "failed": "Fallido"
+  },
+  "actions": {
+    "copyToClipboard": "Copiar al portapapeles",
+    "copyFullChecksum": "Copiar suma de verificación completa",
+    "backToFiles": "Volver a Archivos",
+    "clearSelection": "Limpiar selección",
+    "selectAll": "Seleccionar Todo",
+    "retryUpload": "Reintentar subida",
+    "showUploadSection": "Mostrar Sección de Subida",
+    "hideUploadSection": "Ocultar Sección de Subida",
+    "installApp": "Instalar {{appName}} como aplicación",
+    "clearSelectionTooltip": "Limpiar selección",
+    "deleteSelectedTooltip": "Eliminar {{count}} archivos seleccionados"
+  },
+  "messages": {
+    "noResultsFound": "No se Encontraron Resultados",
+    "searchFailed": "Búsqueda Fallida",
+    "uploadFailed": "Subida fallida",
+    "deleteFailed": "Eliminación fallida",
+    "operationSuccessful": "Operación completada exitosamente",
+    "operationFailed": "Operación fallida",
+    "confirmAction": "¿Estás seguro?",
+    "cannotUndoAction": "Esta acción no se puede deshacer.",
+    "confirmActionFallback": "Confirmar Acción",
+    "areYouSureFallback": "¿Estás seguro?",
+    "confirmFallback": "Confirmar"
+  },
+  "landing": {
+    "clickToAccessFiles": "Haz clic para acceder al índice de archivos",
+    "authenticationRequired": "El acceso a los recursos requiere autenticación adecuada",
+    "contactSupport": "Contactar Soporte"
+  },
+  "error": {
+    "somethingWentWrong": "Algo salió mal",
+    "unexpectedErrorOccurred": "Ocurrió un error inesperado. Por favor, intenta actualizar la página o regresar a la página de inicio.",
+    "refreshPage": "Actualizar Página",
+    "goHome": "Ir al Inicio",
+    "errorDetailsDevelopment": "Detalles del Error (Desarrollo)"
+  },
+  "pwa": {
+    "installApp": "Instalar Aplicación",
+    "installWebTerminalAsApp": "Instalar {{appName}} como aplicación",
+    "offline": "Sin Conexión",
+    "uploadsQueuedForSync": "{{count}} subidas en cola para sincronizar",
+    "offlineMode": "Modo Sin Conexión",
+    "youreOfflineMessage": "Estás sin conexión. Algunas funciones pueden estar limitadas. Las subidas se pondrán en cola para cuando vuelvas a estar en línea.",
+    "updateAvailable": "Actualización Disponible",
+    "newVersionAvailable": "Una nueva versión de {{appName}} está disponible.",
+    "refresh": "Actualizar"
+  },
+  "breadcrumbs": {
+    "web-terminal": "Web-Terminal",
+    "home": "Inicio"
+  }
+}

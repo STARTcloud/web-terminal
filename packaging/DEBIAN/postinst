@@ -1,0 +1,42 @@
+#!/bin/bash
+set -e
+
+# Create system user and group
+if ! getent passwd wtuser > /dev/null 2>&1; then
+    adduser --system --group --home /opt/web-terminal \
+            --no-create-home --shell /usr/sbin/nologin \
+            --gecos "Web-Terminal system user" wtuser
+fi
+
+# Set ownership and permissions
+chown -R wtuser:wtuser /opt/web-terminal
+chown -R wtuser:wtuser /var/lib/web-terminal
+chown -R wtuser:wtuser /var/log/web-terminal
+
+# Initialize database directory
+mkdir -p /var/lib/web-terminal
+chown -R wtuser:wtuser /var/lib/web-terminal
+
+# Create SSL directory for certificate generation
+mkdir -p /etc/web-terminal/ssl
+chown -R wtuser:wtuser /etc/web-terminal
+chmod 700 /etc/web-terminal/ssl
+
+# Reload systemd daemon
+systemctl daemon-reload
+
+echo ""
+echo "======================================================================"
+echo "Web-Terminal has been installed successfully!"
+echo ""
+echo "Next steps:"
+echo "1. Review configuration: /etc/web-terminal/config.yaml"
+echo "2. Start the service: systemctl enable --now web-terminal"
+echo "3. Check status: systemctl status web-terminal"
+echo "4. View logs: journalctl -u web-terminal -f"
+echo ""
+echo "Default access: https://localhost:443 (with self-signed certificate)"
+echo "======================================================================"
+echo ""
+
+#DEBHELPER#

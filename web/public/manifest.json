@@ -1,0 +1,68 @@
+{
+  "short_name": "Web-Terminal",
+  "name": "Web-Terminal",
+  "description": "Web-Terminal Web Interface",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "images/logo192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "images/logo512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "scope": "/",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "theme_color": "#198754",
+  "background_color": "#212529",
+  "categories": ["productivity", "utilities", "business"],
+  "lang": "en",
+  "dir": "ltr",
+  "prefer_related_applications": false,
+  "shortcuts": [
+    {
+      "name": "Upload Files",
+      "short_name": "Upload",
+      "description": "Quick file upload",
+      "url": "/?action=upload",
+      "icons": [
+        {
+          "src": "images/logo192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "API Keys",
+      "short_name": "Keys",
+      "description": "Manage API keys",
+      "url": "/api-keys",
+      "icons": [
+        {
+          "src": "images/logo192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "images/logo512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "form_factor": "wide"
+    }
+  ]
+}
