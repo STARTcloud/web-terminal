@@ -72,6 +72,13 @@ const TerminalPage = () => {
           setIsReady(true);
           console.log("Terminal attached to WebSocket");
 
+          // Fit terminal after attach to ensure proper sizing
+          setTimeout(() => {
+            if (addonsRef.current?.fitAddon) {
+              addonsRef.current.fitAddon.fit();
+            }
+          }, 100);
+
           return () => {
             attachAddon?.dispose();
             setIsReady(false);
@@ -177,7 +184,7 @@ const TerminalPage = () => {
       </div>
 
       {/* Terminal */}
-      <div style={{ flex: 1, padding: "1rem" }}>
+      <div style={{ flex: 1, padding: 0, width: "100%", height: "100%" }}>
         {!instance ? (
           <div
             style={{

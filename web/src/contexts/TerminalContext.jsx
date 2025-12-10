@@ -1,9 +1,18 @@
 import axios from "axios";
-import { createContext, useContext, useCallback, useRef, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useCallback,
+  useRef,
+  useState,
+  useEffect,
+} from "react";
 
 const TerminalContext = createContext();
 
 export const useTerminal = () => useContext(TerminalContext);
+
+const STORAGE_KEY = "web_terminal_cookie";
 
 export const TerminalProvider = ({ children }) => {
   const [session, setSession] = useState(null);
@@ -19,20 +28,28 @@ export const TerminalProvider = ({ children }) => {
     creatingRef.current = true;
 
     try {
-      const terminalCookie = `terminal_${crypto.randomUUID()}_${Date.now()}`;
+      // Try to reuse existing cookie from localStorage
+      let terminalCookie = localStorage.getItem(STORAGE_KEY);
+
+      // If no stored cookie, generate new one
+      if (!terminalCookie) {
+        terminalCookie = `terminal_${crypto.randomUUID()}_${Date.now()}`;
+        localStorage.setItem(STORAGE_KEY, terminalCookie);
+      }
+
       const res = await axios.post("/api/terminal/start", {
         terminal_cookie: terminalCookie,
       });
 
       const sessionData = res.data.data;
 
+      const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
       const ws = new WebSocket(
-        `wss://${window.location.host}${sessionData.websocket_url}`
+        `${protocol}//${window.location.host}${sessionData.websocket_url}`
       );
 
       ws.onopen = () => {
         console.log("Terminal WebSocket connected");
-        ws.send("\n");
       };
 
       ws.onclose = () => {
@@ -47,6 +64,7 @@ export const TerminalProvider = ({ children }) => {
       const sessionWithWs = {
         ...sessionData,
         websocket: ws,
+        terminalCookie,
       };
 
       sessionRef.current = sessionWithWs;
@@ -56,6 +74,8 @@ export const TerminalProvider = ({ children }) => {
       return sessionWithWs;
     } catch (error) {
       console.error("Failed to create terminal session:", error);
+      // Clear invalid cookie on error
+      localStorage.removeItem(STORAGE_KEY);
       return null;
     } finally {
       creatingRef.current = false;
