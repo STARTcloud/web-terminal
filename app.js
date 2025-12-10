@@ -273,6 +273,21 @@ const startServer = async () => {
           logger.info('Client WebSocket established for terminal', { sessionId });
 
           clientWs.on('message', data => {
+            try {
+              // Try to parse as JSON for control messages (e.g., resize)
+              const message = JSON.parse(data);
+              if (message.type === 'resize' && message.cols && message.rows) {
+                ptyProcess.resize(message.cols, message.rows);
+                logger.debug('PTY resized', {
+                  sessionId,
+                  cols: message.cols,
+                  rows: message.rows,
+                });
+                return;
+              }
+            } catch {
+              // Not JSON or invalid message, treat as regular terminal input
+            }
             ptyProcess.write(data);
           });
 

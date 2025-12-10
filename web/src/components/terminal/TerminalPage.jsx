@@ -49,11 +49,21 @@ const TerminalPage = () => {
         instance.loadAddon(addonsRef.current.fitAddon);
         instance.loadAddon(addonsRef.current.webLinksAddon);
         addonsRef.current.fitAddon.fit();
+
+        // Send resize to backend when terminal dimensions change
+        instance.onResize(({ cols, rows }) => {
+          if (session?.websocket?.readyState === WebSocket.OPEN) {
+            session.websocket.send(
+              JSON.stringify({ type: "resize", cols, rows })
+            );
+            console.log("Sent resize to backend:", { cols, rows });
+          }
+        });
       } catch (error) {
         console.error("Terminal addon loading failed:", error);
       }
     }
-  }, [instance]);
+  }, [instance, session?.websocket]);
 
   // Attach WebSocket when it's OPEN (critical!)
   useEffect(() => {
