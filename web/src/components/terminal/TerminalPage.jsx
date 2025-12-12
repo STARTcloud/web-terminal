@@ -113,7 +113,6 @@ const TerminalPage = () => {
     // Listen for websocket events
     const onOpen = () => {
       attachWhenReady();
-      return undefined;
     };
 
     const onClose = () => {
