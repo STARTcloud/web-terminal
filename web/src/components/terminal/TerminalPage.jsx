@@ -117,9 +117,11 @@ const TerminalPage = () => {
     websocket.addEventListener("open", onOpen);
     websocket.addEventListener("close", onClose);
 
-    return () => {
-      attachAddonRef.current?.dispose();
-      attachAddonRef.current = null;
+    return function cleanup() {
+      if (attachAddonRef.current) {
+        attachAddonRef.current.dispose();
+        attachAddonRef.current = null;
+      }
       setIsReady(false);
       websocket.removeEventListener("open", onOpen);
       websocket.removeEventListener("close", onClose);
