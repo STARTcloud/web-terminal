@@ -6,12 +6,14 @@ parent: Guides
 permalink: /docs/guides/installation/
 ---
 
-# Installation
+## Installation
+
 {: .no_toc }
 
 This guide covers different methods for installing and deploying Web-Terminal in various environments.
 
 ## Table of contents
+
 {: .no_toc .text-delta }
 
 1. TOC
@@ -58,6 +60,7 @@ sudo systemctl status web-terminal
 ```
 
 Package installation includes:
+
 - Web-Terminal application files at `/opt/web-terminal/`
 - Configuration at `/etc/web-terminal/config.yaml`
 - Systemd service with security restrictions
@@ -83,6 +86,7 @@ svcs web-terminal
 ```
 
 Package includes:
+
 - Application at `/opt/web-terminal/`
 - SMF service manifest
 - Configuration at `/etc/web-terminal/config.yaml`
@@ -170,6 +174,7 @@ sudo chown -R web-terminal:web-terminal /etc/web-terminal
 ### Auto-Generated (Development)
 
 For testing:
+
 ```yaml
 ssl:
   generate_ssl: true  # Web-Terminal creates self-signed certificate
@@ -337,13 +342,14 @@ SMF manifest provides robust service management:
 
 1. **Open browser**: Navigate to `https://your-server` (or `https://localhost` for local)
 2. **Login**: Use configured admin credentials
-3. **Upload test file**: Verify file operations work
-4. **Check API**: Visit `/api-docs` for Swagger UI
-5. **Create API keys**: Generate keys for automation
+3. **Open terminal**: Click "Open Terminal" to access shell
+4. **Test terminal**: Execute basic commands to verify functionality
+5. **Check API**: Visit `/api-docs` for Swagger UI documentation
 
 ### Production Hardening
 
 1. **Change Default Passwords**:
+
    ```yaml
    authentication:
      local:
@@ -353,6 +359,7 @@ SMF manifest provides robust service management:
    ```
 
 2. **Configure Rate Limiting**:
+
    ```yaml
    rate_limiting:
      window_minutes: 15
@@ -361,6 +368,7 @@ SMF manifest provides robust service management:
    ```
 
 3. **Secure File Directory**:
+
    ```bash
    sudo chmod 750 /var/lib/web-terminal/files
    sudo chown web-terminal:web-terminal /var/lib/web-terminal/files
@@ -369,6 +377,7 @@ SMF manifest provides robust service management:
 ## Backup and Recovery
 
 ### Configuration Backup
+
 ```bash
 # Backup configuration
 sudo cp /etc/web-terminal/config.yaml /etc/web-terminal/config.yaml.backup
@@ -378,6 +387,7 @@ sudo cp /var/lib/web-terminal/database/web-terminal.db /var/lib/web-terminal/dat
 ```
 
 ### Restore Process
+
 ```bash
 # Stop service
 sudo systemctl stop web-terminal
@@ -425,32 +435,12 @@ sudo tail -f /var/log/web-terminal/error.log
 
 ---
 
-## Troubleshooting
-
-### Common Installation Issues
-
-**Package Installation Failed**
-- Check Node.js version: `node --version` (must be 22+)
-- Verify architecture: `dpkg --print-architecture` (should be amd64)
-- Check dependencies: `apt list --installed | grep nodejs`
-
-**Service Won't Start**
-```bash
-# Check detailed status
-sudo systemctl status web-terminal -l
-
-# Check configuration
-sudo web-terminal --check-config
-
-# Verify file permissions
-sudo ls -la /opt/web-terminal/
-```
-
-**Port Access Issues**
-- Check if port 443 is available: `sudo ss -tulpn | grep :443`
-- Verify user has permission for privileged port
-- Check firewall: `sudo ufw status`
+For installation troubleshooting, see the **[Troubleshooting Guide](troubleshooting/)**.
 
 ---
 
-Next: [Authentication](authentication/) - Configure user management and API keys
+## Next Steps
+
+- **[Getting Started](getting-started/)** - Initial setup and first access
+- **[Authentication](authentication/)** - Configure users and OIDC
+- **[Configuration](configuration/)** - Complete configuration reference

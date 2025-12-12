@@ -6,6 +6,7 @@ permalink: /docs/architecture/
 ---
 
 <style>
+
 /* Override specific Just the Docs constraints for full width layout */
 
 /* Disable sidebar width calculation for full width */
@@ -14,7 +15,7 @@ permalink: /docs/architecture/
         /* width: calc((100% - 76.5rem) / 2 + 16.5rem); ## Disabled for full width */
         min-width: 16.5rem;
     }
-    
+
     .side-bar + .main {
         /* margin-left: max(16.5rem, (100% - 76.5rem) / 2 + 16.5rem); ## Disabled for full width */
         margin-left: 15.5rem;
@@ -31,11 +32,11 @@ permalink: /docs/architecture/
         /* align-items: flex-end; ## Disabled for full width */
         align-items: flex-start;
     }
-    
+
     .side-bar + .main {
         margin-left: 15.5rem;
     }
-    
+
     .main {
         position: relative;
         /* max-width: 60rem; ## Disabled for full width */
@@ -93,7 +94,8 @@ permalink: /docs/architecture/
 }
 </style>
 
-# Web-Terminal Architecture
+## Web-Terminal Architecture
+
 {: .fs-8 }
 
 Comprehensive system architecture showing all components, services, and data flows.
@@ -103,153 +105,138 @@ Comprehensive system architecture showing all components, services, and data flo
 
 ## System Overview
 
-Web-Terminal is an enterprise-grade file management system built with a modern microservices-style architecture. The system provides secure file operations, real-time collaboration, and comprehensive API access through multiple authentication methods.
+Web-Terminal is a secure web-based terminal application providing shell access through the browser. Built with Node.js and React, it uses WebSocket for real-time terminal I/O and supports multiple authentication methods including OIDC.
 
 ## Detailed Architecture Diagram
 
 ```mermaid
-graph LR
-    subgraph "Clients"
-        WB[Web Browser<br/>React SPA]
-        CLI[CLI Tools<br/>wget/curl]
-        API[API Clients]
+graph TB
+    subgraph "Client Layer"
+        BROWSER[Web Browser<br/>xterm.js Terminal]
+        API[API Clients<br/>REST]
     end
     
-    subgraph "Authentication"
+    subgraph "Authentication Layer"
         AUTH{Auth<br/>Middleware}
         JWT[JWT Sessions]
-        KEYS[API Keys]
         BASIC[Basic Auth]
-        OIDC[OIDC/SSO]
+        OIDC[OIDC Providers<br/>Google/MS/etc]
     end
     
-    subgraph "Server Core"
+    subgraph "Application Server"
         EXPRESS[Express.js<br/>HTTPS Server]
         ROUTES[REST API<br/>Routes]
         SECURITY[Security<br/>Middleware]
+        SESSIONS[Terminal Session<br/>Management]
     end
     
-    subgraph "Real-time"
-        SSE[Server-Sent<br/>Events]
-        EVENTS[Event<br/>Broadcasting]
-    end
-    
-    subgraph "Background Services"
-        WATCHER[File Watcher<br/>Chokidar]
-        CHECKSUM[Checksum<br/>Service]
-        CACHE[Cache<br/>Service]
+    subgraph "Terminal Layer"
+        WS[WebSocket<br/>Handler]
+        PTY[PTY Processes<br/>node-pty]
+        SHELL[Shell<br/>Bash/PowerShell]
     end
     
     subgraph "Data Layer"
-        DB[(Database<br/>Multi-engine)]
-        FS[File System<br/>Secure Serving]
+        DB[(Database<br/>Session Storage)]
         CONFIG[YAML<br/>Configuration]
     end
     
     subgraph "Frontend"
         REACT[React SPA]
-        SWAGGER[Swagger UI]
-        PWA[Progressive<br/>Web App]
+        XTERM[xterm.js<br/>Terminal]
+        SWAGGER[Swagger UI<br/>API Docs]
     end
     
-    %% Client flows
-    WB -->|HTTPS| EXPRESS
-    CLI -->|Basic Auth| EXPRESS
-    API -->|Bearer Token| EXPRESS
+    %% Client connections
+    BROWSER -->|HTTPS| EXPRESS
+    API -->|HTTPS| EXPRESS
     
-    %% Authentication
+    %% Authentication flow
     EXPRESS --> AUTH
     AUTH --> JWT
-    AUTH --> KEYS
     AUTH --> BASIC
     AUTH --> OIDC
     
     %% Core processing
     EXPRESS --> SECURITY
     SECURITY --> ROUTES
-    ROUTES --> WATCHER
-    ROUTES --> SSE
+    ROUTES --> SESSIONS
     
-    %% Real-time communication
-    SSE --> EVENTS
-    EVENTS -.->|Live Updates| WB
+    %% WebSocket for terminal I/O
+    BROWSER -->|WebSocket| WS
+    WS --> PTY
+    PTY --> SHELL
     
-    %% Background processing
-    WATCHER --> CHECKSUM
-    CHECKSUM --> CACHE
-    WATCHER --> EVENTS
-    CHECKSUM --> EVENTS
-    
-    %% Data persistence
-    ROUTES --> DB
-    ROUTES --> FS
-    WATCHER --> DB
-    CHECKSUM --> DB
+    %% Session management
+    SESSIONS --> DB
+    SESSIONS --> PTY
     
     %% Configuration
     CONFIG --> EXPRESS
     CONFIG --> AUTH
-    CONFIG --> WATCHER
     
-    %% Frontend integration
-    WB --> REACT
+    %% Frontend components
+    BROWSER --> REACT
+    REACT --> XTERM
     REACT --> SWAGGER
-    REACT --> PWA
 ```
 
 ## Component Details
 
 ### Client Layer
-- **Web Browser**: React SPA with real-time SSE integration
-- **CLI Tools**: Full compatibility with wget, curl, and similar tools
-- **API Clients**: RESTful API access with Bearer token authentication
-- **Mobile Devices**: Responsive interface optimized for mobile access
+
+- **Web Browser**: React SPA with xterm.js for terminal rendering
+- **API Clients**: RESTful API access for terminal session management
+- **Mobile Devices**: Responsive interface with mobile terminal support
 
 ### Authentication & Authorization
-- **Multi-method Authentication**: Supports JWT sessions, API keys, and HTTP Basic Auth
-- **OIDC Integration**: Enterprise SSO with Google, GitHub, and custom providers
-- **Role-based Access Control**: Granular permissions (downloads, uploads, delete)
-- **API Key Management**: Scoped permissions with expiration and usage tracking
+
+- **Multi-method Authentication**: JWT sessions, Basic Auth
+- **OIDC Integration**: Enterprise SSO with Google, Microsoft, and custom providers
+- **Role-based Access**: Admin vs User terminal access
+- **Session Security**: JWT-based authentication with token revocation support
 
 ### Server Core
-- **Express.js**: High-performance web server with comprehensive middleware
+
+- **Express.js**: High-performance HTTPS server
 - **Security Middleware**: Helmet, CORS, CSRF protection, and rate limiting
-- **Input Validation**: Path security and upload sanitization
-- **Route Handlers**: RESTful API endpoints with comprehensive error handling
+- **Route Handlers**: RESTful API for session management and authentication
+- **WebSocket Upgrade**: Dedicated WebSocket handling for terminal I/O
 
-### Real-time System
-- **Server-Sent Events**: Live updates for file operations and progress
-- **Event Broadcasting**: Multi-client synchronization system
-- **WebSocket Management**: Connection handling and client state tracking
+### Terminal Layer
 
-### Background Services
-- **File Watcher**: Real-time file system monitoring with Chokidar
-- **Checksum Service**: SHA256 calculation with worker pool management
-- **Maintenance Service**: Database optimization and cleanup operations
-- **Cache Service**: Performance optimization for directory listings
-- **Batch Operations**: Optimized database operations for high throughput
+- **node-pty**: PTY (pseudo-terminal) process spawning
+- **WebSocket Protocol**: Bidirectional real-time communication
+- **Shell Support**: PowerShell on Windows, Bash on Linux/Unix
+- **Session Tracking**: Active session management with health monitoring
+
+### Session Management
+
+- **Session Persistence**: Terminal sessions stored in database
+- **Auto-cleanup**: Inactive session removal after timeout
+- **Reconnection**: Sessions resume after network interruptions
+- **Multi-tab Support**: Same session accessible from multiple browser tabs
 
 ### Data Layer
+
 - **Multi-database Support**: SQLite (default), PostgreSQL, MySQL
-- **File Metadata**: Comprehensive tracking of checksums, timestamps, and structure
-- **API Key Storage**: Encrypted key storage with permission management
-- **User Management**: Local and OIDC user integration
+- **Session Storage**: Terminal session metadata and state
+- **User Management**: Local users and OIDC user profiles
+- **Token Revocation**: JWT token tracking for backchannel logout
 
-### File System
-- **Secure Serving**: Path validation and access control
-- **Upload Processing**: Multer integration with validation and processing
-- **Static Content**: Support for custom index.html and theme assets
+### Configuration & Logging
 
-### Configuration & Internationalization
 - **YAML Configuration**: Flexible, environment-aware configuration system
-- **Multi-language Support**: Auto-detected locales with fallback support
-- **Centralized Logging**: Winston-based logging with rotation and multiple transports
+- **Multi-language Support**: Auto-detected locales with English and Spanish translations
+- **Centralized Logging**: Winston-based logging with rotation and multiple log files
+- **Separate Log Files**: Dedicated logs for app, access, auth, and database operations
 
 ### Frontend Architecture
+
 - **React SPA**: Modern single-page application with client-side routing
-- **Component Library**: Comprehensive UI components for file management
-- **Custom Hooks**: SSE integration and file operation abstractions
-- **Progressive Web App**: Service worker support with offline capabilities
+- **xterm.js Integration**: Full-featured terminal emulator in the browser
+- **Component Library**: UI components for terminal, authentication, and navigation
+- **Progressive Web App**: Service worker support for offline functionality
 - **Integrated Swagger UI**: API documentation and testing interface
 
 ---

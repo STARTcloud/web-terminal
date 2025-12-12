@@ -144,7 +144,6 @@ For complete configuration reference, see [Configuration Guide](docs/configurati
 
 ## Troubleshooting
 
-
 For complete Troubleshooting reference, see [Configuration Guide](docs/troubleshooting.md).
 
 ## Logs

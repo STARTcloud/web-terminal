@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { join, dirname, basename } from 'path';
+import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import yaml from 'js-yaml';
 import jsonMerger from 'json-merger';
@@ -10,7 +10,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 // Helper function for basename (using function expression to satisfy linting)
-const basename = function (path) {
+const getBasename = function (path) {
   return path.split(/[\\/]/).pop();
 };
 
@@ -103,7 +103,7 @@ class ConfigMigrator {
       // Attempt to restore backup
       const backupFiles = fs
         .readdirSync(dirname(this.userConfigPath))
-        .filter(file => file.startsWith(`${basename(this.userConfigPath)}.backup.`))
+        .filter(file => file.startsWith(`${getBasename(this.userConfigPath)}.backup.`))
         .sort()
         .reverse();
 

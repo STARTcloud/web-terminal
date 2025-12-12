@@ -6,10 +6,11 @@ description: "Web-Terminal Documentation"
 permalink: /
 ---
 
-# Web-Terminal Documentation
+## Web-Terminal Documentation
+
 {: .fs-9 }
 
-A secure Node.js file server with comprehensive Swagger UI integration and real-time collaboration features.
+A secure web-based terminal application with OIDC authentication and comprehensive API documentation.
 {: .fs-6 .fw-300 }
 
 [Get started now](#getting-started){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
@@ -20,28 +21,26 @@ A secure Node.js file server with comprehensive Swagger UI integration and real-
 
 ## Getting started
 
-**Web-Terminal** - A production-ready file management system with comprehensive API documentation and real-time collaboration features.
+**Web-Terminal** - A secure web-based terminal application providing shell access through your browser with OIDC authentication support.
 
 ### Key Features
 
-- **Comprehensive Swagger UI**: Dark theme, seamless authentication, clean REST API design
-- **Universal Authentication**: HTTP Basic Auth (wget compatible), JWT sessions, API keys
-- **Role-Based Security**: Users (downloads only) vs Admins (full access)
-- **Real-Time Collaboration**: All operations sync across users instantly via Server-Sent Events
-- **Clean REST API**: Dedicated endpoints for search, folder creation, and file operations
+- **Web-Based Terminal**: Access shell sessions through your browser using xterm.js
+- **Comprehensive Authentication**: Basic Auth, JWT sessions, and OIDC provider support (Google, Microsoft, etc.)
+- **Session Management**: Persistent terminal sessions with automatic reconnection
+- **WebSocket Communication**: Real-time bidirectional terminal I/O via WebSocket
+- **API Documentation**: Comprehensive Swagger UI for API endpoints
 - **Multi-Platform**: DEBIAN and OmniOS packages with professional CI/CD
 
 ### Architecture
+
 ```mermaid
 graph TD
     A[Web Browser] -->|HTTPS| B[Web-Terminal Server]
-    C[CLI Tools] -->|HTTP Basic Auth| B
-    D[API Clients] -->|Bearer Tokens| B
-    B -->|File Operations| E[File System]
-    B -->|Real-time Updates| F[Server-Sent Events]
-    B -->|Authentication| G[JWT/API Keys/OIDC]
-    B -->|File Metadata| H[(Database)]
-    B -->|Background Processing| I[Checksum Service]
+    B -->|WebSocket| C[PTY Process]
+    C -->|Shell| D[PowerShell/Bash]
+    B -->|Authentication| E[JWT/OIDC]
+    B -->|Session Data| F[(Database)]
 ```
 
 **[View Detailed Architecture](docs/architecture/)**
@@ -51,30 +50,29 @@ graph TD
 1. **Installation**: Install via DEBIAN package or build from source
 2. **Configuration**: Edit `/etc/web-terminal/config.yaml` for your environment
 3. **Authentication**: Configure users and OIDC providers
-4. **API Keys**: Generate keys for programmatic access
-5. **Access**: Browse files via web interface or use comprehensive REST API
-6. **Try API**: Visit the [API documentation](docs/api/swagger-ui.html) for interactive testing
+4. **Access Terminal**: Login via web browser and access shell
+5. **Try API**: Visit the [API documentation](docs/api/swagger-ui.html) for REST API testing
 
 ### Core Capabilities
 
-#### **Universal Authentication**
-- **HTTP Basic Auth**: `wget --user=admin --password=pass https://domain.com/file.txt`
-- **JWT Sessions**: Browser-based authentication with OIDC support
-- **API Keys**: Bearer token authentication with configurable permissions
+#### **Terminal Access**
 
-#### **Complete File Management**
-- **Upload**: Drag-and-drop or API with automatic checksum calculation
-- **Download**: Direct download or force download via long-press
-- **Search**: Find files by name or SHA256 checksum
-- **Rename**: Real-time file/folder renaming with SSE updates
-- **Delete**: Secure deletion with multi-user notification
+- **Browser-Based Shell**: Full terminal access via xterm.js in your browser
+- **Session Persistence**: Terminal sessions survive page refreshes and disconnections
+- **WebSocket Communication**: Real-time bidirectional I/O between browser and shell
+- **Automatic Reconnection**: Sessions automatically reconnect after network interruptions
 
-#### **Swagger UI Integration**
-- **Dark theme**: Professional appearance with seamless integration
-- **Dynamic server detection**: Auto-detects current host with custom override
-- **API key integration**: Fill authentication directly from your existing keys
-- **Temporary keys**: Generate testing keys on-demand
-- **Clean REST design**: Dedicated endpoints eliminate API confusion
+#### **Authentication Options**
+
+- **Basic Auth**: Simple username/password authentication
+- **JWT Sessions**: Secure browser-based sessions
+- **OIDC Integration**: Sign in with Google, Microsoft, or other OIDC providers
+
+#### **API Access**
+
+- **REST API**: Terminal session management via REST endpoints
+- **Swagger UI**: Interactive API documentation and testing
+- **Session Control**: Start, stop, and manage terminal sessions programmatically
 
 ### Documentation
 
@@ -90,7 +88,7 @@ Comprehensive documentation for all aspects of Web-Terminal:
 
 ## About the project
 
-Web-Terminal is &copy; 2025 by STARTcloud.
+Web-Terminal is developed in &copy; 2025 by STARTcloud.
 
 ### License
 
@@ -100,7 +98,7 @@ Web-Terminal is distributed under a [GPL-3.0 license](https://github.com/STARTcl
 
 When contributing to this repository, please first discuss the change you wish to make via issue, email, or any other method with the owners of this repository before making a change. Read more about becoming a contributor in [our GitHub repo](https://github.com/STARTcloud/web-terminal#contributing).
 
-#### Thank you to the contributors of Web-Terminal!
+#### Thank you to the contributors of Web-Terminal
 
 <ul class="list-style-none">
 {% for contributor in site.github.contributors %}

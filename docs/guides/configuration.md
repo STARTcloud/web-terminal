@@ -5,12 +5,14 @@ nav_order: 4
 permalink: /docs/configuration/
 ---
 
-# Configuration Reference
+## Configuration Reference
+
 {: .no_toc }
 
 Complete reference for configuring Web-Terminal using the configuration file.
 
 ## Table of contents
+
 {: .no_toc .text-delta }
 
 1. TOC
@@ -21,12 +23,14 @@ Complete reference for configuring Web-Terminal using the configuration file.
 ## Configuration File Location
 
 The main configuration file is located at:
+
 - **Package Installation**: `/etc/web-terminal/config.yaml`  
 - **Development**: `config.yaml` or `dev.config.yaml`
 
 ### Configuration Priority
 
 Web-Terminal loads configuration in this order:
+
 1. `dev.config.yaml` (development override - highest priority)
 2. `config.yaml` (production configuration)
 3. `auth.yaml` (legacy fallback - lowest priority)
@@ -167,6 +171,7 @@ ssl:
 ```
 
 For production, use proper certificates:
+
 ```yaml
 ssl:
   generate_ssl: false
@@ -179,6 +184,7 @@ ssl:
 File metadata storage settings. Web-Terminal supports SQLite, PostgreSQL, and MySQL databases.
 
 #### SQLite Configuration (Default)
+
 ```yaml
 database:
   dialect: "sqlite"                   # Database type
@@ -191,6 +197,7 @@ database:
 ```
 
 #### PostgreSQL Configuration
+
 ```yaml
 database:
   dialect: "postgres"
@@ -207,6 +214,7 @@ database:
 ```
 
 #### MySQL Configuration
+
 ```yaml
 database:
   dialect: "mysql"
@@ -223,6 +231,7 @@ database:
 ```
 
 #### PostgreSQL Configuration
+
 ```yaml
 database:
   dialect: "postgres"
@@ -239,6 +248,7 @@ database:
 ```
 
 #### MySQL Configuration
+
 ```yaml
 database:
   dialect: "mysql"
@@ -283,16 +293,17 @@ rate_limiting:
 ## User Roles and Permissions
 
 ### Admin Role (role: admin)
-- **File operations**: Upload, download, delete, rename
-- **Folder management**: Create and manage directories
-- **API key creation**: Generate keys with any permissions (downloads, uploads, delete)
-- **Full access**: All file operations and management features
+
+- **Terminal access**: Full shell access via web terminal
+- **Session management**: Can view and stop all terminal sessions
+- **Configuration**: Access to terminal configuration and settings
+- **Full privileges**: Unrestricted shell access
 
 ### User Role (role: user)
-- **File access**: Download files only
-- **Browse directories**: Navigate file structure
-- **API key creation**: Generate download-only keys
-- **Limited access**: Cannot upload, delete, or modify files
+
+- **Terminal access**: Standard shell access via web terminal
+- **Own sessions**: Manage only their own terminal sessions
+- **Limited privileges**: Shell access with standard user permissions
 
 ## Environment-Specific Configuration
 
@@ -369,6 +380,7 @@ Environment variables use the format: `WEB_TERMINAL_SECTION_OPTION`
 ## Production Recommendations
 
 ### 1. Secure Authentication
+
 ```yaml
 authentication:
   jwt_secret: "$(openssl rand -hex 32)"  # Generate secure secret
@@ -376,6 +388,7 @@ authentication:
 ```
 
 ### 2. Proper SSL Certificates
+
 ```yaml
 ssl:
   generate_ssl: false
@@ -384,6 +397,7 @@ ssl:
 ```
 
 ### 3. Rate Limiting
+
 ```yaml
 rate_limiting:
   window_minutes: 15
@@ -392,6 +406,7 @@ rate_limiting:
 ```
 
 ### 4. Database Security
+
 ```yaml
 database:
   storage: "/var/lib/web-terminal/database/web-terminal.db"
@@ -401,6 +416,7 @@ database:
 ## Configuration Validation
 
 Web-Terminal validates configuration on startup and will:
+
 - Generate SSL certificates if needed
 - Create database directories
 - Validate user accounts
@@ -412,16 +428,19 @@ Web-Terminal validates configuration on startup and will:
 ### Common Configuration Issues
 
 **Service Won't Start**
+
 - Check config file syntax: `web-terminal --check-config`
 - Verify file permissions: `sudo chown web-terminal:web-terminal /etc/web-terminal/config.yaml`
 - Check logs: `sudo journalctl -u web-terminal -f`
 
 **SSL Certificate Errors**
+
 - Verify certificate files exist and are readable
 - Check certificate validity: `openssl x509 -in cert.pem -text -noout`
 - Regenerate if needed: `sudo rm /etc/web-terminal/ssl/* && sudo systemctl restart web-terminal`
 
 **Authentication Problems**
+
 - Verify JWT secret is set
 - Check user account configuration
 - Test with basic auth: `curl -k -u admin:admin123 https://localhost/`
@@ -429,22 +448,26 @@ Web-Terminal validates configuration on startup and will:
 **Database Issues**
 
 **SQLite Issues**
+
 - Check SQLite file permissions: `sudo chown web-terminal:web-terminal /var/lib/web-terminal/database/`
 - Verify disk space available
 - Test database: `sqlite3 /var/lib/web-terminal/database/web-terminal.db .tables`
 
 **PostgreSQL Issues**
+
 - Check connection: `psql -h localhost -U web-terminal_user -d web-terminal_db`
 - Verify schema ownership: `psql -d web-terminal_db -c "\dn+"`
 - If ENUM creation fails: `sudo -u postgres psql -d web-terminal_db -c "ALTER SCHEMA public OWNER TO web-terminal_user;"`
 - Check PostgreSQL service: `sudo systemctl status postgresql`
 
 **MySQL Issues**
+
 - Check connection: `mysql -h localhost -u web-terminal_user -p web-terminal_db`
 - Verify user privileges: `SHOW GRANTS FOR 'web-terminal_user'@'localhost';`
 - Check MySQL service: `sudo systemctl status mysql`
 
 **General Database Issues**
+
 - Verify database dependencies are installed (`pg` for PostgreSQL, `mysql2` for MySQL)
 - Check database service is running
 - Verify network connectivity and firewall settings
@@ -452,4 +475,12 @@ Web-Terminal validates configuration on startup and will:
 
 ---
 
-For more help, see [Support Documentation](../support/) or [open an issue](https://github.com/STARTcloud/web-terminal/issues).
+For configuration troubleshooting, see the **[Troubleshooting Guide](troubleshooting/)**.
+
+---
+
+## Related Documentation
+
+- **[Getting Started](getting-started/)** - Initial setup guide
+- **[Installation](installation/)** - Installation methods
+- **[Authentication](authentication/)** - User and OIDC configuration

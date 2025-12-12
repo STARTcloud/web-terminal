@@ -5,12 +5,14 @@ nav_order: 6
 permalink: /docs/changelog/
 ---
 
-# Changelog
+## Changelog
+
 {: .no_toc }
 
 Release history and changes for Web-Terminal.
 
 ## Table of contents
+
 {: .no_toc .text-delta }
 
 1. TOC

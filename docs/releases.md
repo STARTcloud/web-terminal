@@ -5,7 +5,8 @@ nav_order: 5
 permalink: /docs/releases/
 ---
 
-# Releases
+## Releases
+
 {: .no_toc }
 
 Download the latest version of Web-Terminal.

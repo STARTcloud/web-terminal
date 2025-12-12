@@ -25,7 +25,10 @@ const isSessionHealthy = sessionId => {
       process.kill(ptyProcess.pid, 0);
       return true;
     } catch (pidError) {
-      logger.debug(t('logs.processNoLongerExists'), { pid: ptyProcess.pid, error: pidError.message });
+      logger.debug(t('logs.processNoLongerExists'), {
+        pid: ptyProcess.pid,
+        error: pidError.message,
+      });
       activePtyProcesses.delete(sessionId);
       return false;
     }
@@ -254,7 +257,9 @@ router.post('/start', requireAuthentication, async (req, res) => {
 
 router.get('/sessions', requireAuthentication, async (req, res) => {
   try {
-    logger.debug(t('logs.listingTerminalSessions'), { user: req.user?.email || req.user?.username });
+    logger.debug(t('logs.listingTerminalSessions'), {
+      user: req.user?.email || req.user?.username,
+    });
     const TerminalSession = getTerminalSessionModel();
     const sessions = await TerminalSession.findAll({
       order: [['created_at', 'DESC']],

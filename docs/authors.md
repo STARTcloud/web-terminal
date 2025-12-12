@@ -5,12 +5,14 @@ nav_order: 13
 permalink: /docs/authors/
 ---
 
-# Authors
+## Authors
+
 {: .no_toc }
 
 Contributors and authors of Web-Terminal.
 
 ## Table of contents
+
 {: .no_toc .text-delta }
 
 1. TOC

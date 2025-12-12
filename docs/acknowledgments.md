@@ -5,12 +5,14 @@ nav_order: 12
 permalink: /docs/acknowledgments/
 ---
 
-# Acknowledgments
+## Acknowledgments
+
 {: .no_toc }
 
 Acknowledgments and credits for Web-Terminal.
 
 ## Table of contents
+
 {: .no_toc .text-delta }
 
 1. TOC
