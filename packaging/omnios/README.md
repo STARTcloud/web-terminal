@@ -145,7 +145,6 @@ The IPS package will create:
 ├── middleware/                     # Express middleware
 ├── config/                         # Configuration files
 ├── utils/                          # Utility functions
-├── services/                       # Background services
 ├── web/dist/                       # Built frontend files
 ├── node_modules/                   # Production dependencies
 ├── startup.sh                      # SMF start method

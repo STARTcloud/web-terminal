@@ -39,7 +39,7 @@ mkdir -p "${PACKAGE_NAME}_${VERSION}_${ARCH}"/{opt/web-terminal,etc/web-terminal
 ### 3. Copy Application Files
 ```bash
 # Application files to /opt/web-terminal (Web-Terminal's backend-only structure)
-cp -r models routes middleware config utils services packaging app.js package.json "${PACKAGE_NAME}_${VERSION}_${ARCH}/opt/web-terminal/"
+cp -r models routes middleware config utils packaging app.js package.json "${PACKAGE_NAME}_${VERSION}_${ARCH}/opt/web-terminal/"
 cp -r node_modules "${PACKAGE_NAME}_${VERSION}_${ARCH}/opt/web-terminal/"
 mkdir -p "${PACKAGE_NAME}_${VERSION}_${ARCH}/opt/web-terminal/web/"
 cp -r web/public "${PACKAGE_NAME}_${VERSION}_${ARCH}/opt/web-terminal/web/public"
