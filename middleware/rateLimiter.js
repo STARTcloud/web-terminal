@@ -3,6 +3,7 @@ import { existsSync } from 'fs';
 import path from 'path';
 import configLoader from '../config/configLoader.js';
 import { logger } from '../config/logger.js';
+import { t } from '../config/i18n.js';
 
 export const rateLimiterMiddleware = () => {
   const rateLimitConfig = configLoader.getRateLimitConfig();
@@ -16,7 +17,7 @@ export const rateLimiterMiddleware = () => {
     skipFailedRequests: rateLimitConfig.skip_failed_requests,
     handler: (req, res) => {
       // Log rate limit hit with Winston
-      logger.warn('Rate limit exceeded', {
+      logger.warn(t('rateLimit.exceeded'), {
         ip: req.ip,
         method: req.method,
         url: req.url,

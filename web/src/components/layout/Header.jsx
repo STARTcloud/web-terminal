@@ -19,49 +19,13 @@ const Header = () => {
     setShowLanguageModal(false);
   };
 
-  // Get language display name ## Note from a human, this should be put in the translations files, not statically defined here
+  // Get language display name from translations
   const getLanguageDisplayName = (languageCode) => {
-    const languageNames = {
-      en: "English",
-      es: "Español",
-      fr: "Français",
-      de: "Deutsch",
-      it: "Italiano",
-      pt: "Português",
-      ru: "Русский",
-      zh: "中文",
-      ja: "日本語",
-      ko: "한국어",
-      ar: "العربية",
-      hi: "हिन्दी",
-      nl: "Nederlands",
-      sv: "Svenska",
-      da: "Dansk",
-      no: "Norsk",
-      fi: "Suomi",
-      pl: "Polski",
-      cs: "Čeština",
-      hu: "Magyar",
-      ro: "Română",
-      bg: "Български",
-      hr: "Hrvatski",
-      sk: "Slovenčina",
-      sl: "Slovenščina",
-      et: "Eesti",
-      lv: "Latviešu",
-      lt: "Lietuvių",
-      el: "Ελληνικά",
-      tr: "Türkçe",
-      he: "עברית",
-      th: "ไทย",
-      vi: "Tiếng Việt",
-      id: "Bahasa Indonesia",
-      ms: "Bahasa Melayu",
-      tl: "Filipino",
-      sw: "Kiswahili",
-    };
-
-    return languageNames[languageCode] || languageCode.toUpperCase();
+    const translationKey = `languageNames.${languageCode}`;
+    const translated = t(translationKey);
+    
+    // If translation doesn't exist, fall back to uppercase code
+    return translated !== translationKey ? translated : languageCode.toUpperCase();
   };
 
   // Get supported languages from i18n

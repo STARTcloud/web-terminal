@@ -1,7 +1,7 @@
 import express from 'express';
 import { specs } from '../config/swagger.js';
 import { logger } from '../config/logger.js';
-import { getSupportedLocales, getDefaultLocale } from '../config/i18n.js';
+import { getSupportedLocales, getDefaultLocale, t } from '../config/i18n.js';
 
 const router = express.Router();
 
@@ -41,7 +41,7 @@ const router = express.Router();
  *                   description: Reusable components including schemas and security schemes
  */
 router.get('/swagger.json', (req, res) => {
-  logger.debug('Serving OpenAPI spec for React Swagger UI', { path: req.path });
+  logger.debug(t('logs.servingOpenApiSpec'), { path: req.path });
   res.json(specs);
 });
 
@@ -96,14 +96,14 @@ router.get('/swagger.json', (req, res) => {
  */
 router.get('/i18n/languages', (req, res) => {
   try {
-    logger.debug('i18n languages requested', { path: req.path });
+    logger.debug(t('logs.i18nLanguagesRequested'), { path: req.path });
     res.json({
       success: true,
       languages: getSupportedLocales(),
       defaultLanguage: getDefaultLocale(),
     });
   } catch (error) {
-    logger.error('Failed to get i18n languages', { error: error.message });
+    logger.error(t('logs.failedToGetI18nLanguages'), { error: error.message });
     res.json({
       success: false,
       languages: [],

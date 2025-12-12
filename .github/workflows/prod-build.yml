@@ -108,41 +108,6 @@ jobs:
         run: |
           dpkg-deb --build "${PACKAGE_NAME}_${VERSION}_${ARCH}" "${PACKAGE_NAME}_${VERSION}_${ARCH}.deb"
 
-      # OmniOS Build Steps
-      - name: Fresh checkout for OmniOS build
-        uses: actions/checkout@v6
-        with:
-          path: omnios-source
-          clean: true
-
-      - name: Clean OmniOS build directory
-        run: |
-          ssh ghrunner@omnios.packages.startcloud.com "rm -rf /local/builds/web-terminal/* /local/builds/web-terminal/.*" || true
-
-      - name: Sync source code to OmniOS
-        run: |
-          rsync -av \
-            --exclude='.git' \
-            --exclude='node_modules' \
-            --exclude='web/node_modules' \
-            --exclude='web/dist' \
-            --exclude='*.deb' \
-            omnios-source/ ghrunner@omnios.packages.startcloud.com:/local/builds/web-terminal/
-
-      - name: Build package on OmniOS
-        run: |
-          ssh ghrunner@omnios.packages.startcloud.com "
-            cd /local/builds/web-terminal && 
-            export PATH=/opt/ooce/bin:/opt/ooce/node-22/bin:\$PATH &&
-            export MAKE=gmake &&
-            chmod +x packaging/omnios/build.sh &&
-            ./packaging/omnios/build.sh
-          "
-
-      - name: Transfer OmniOS package back
-        run: |
-          rsync -av ghrunner@omnios.packages.startcloud.com:/local/builds/web-terminal/*.p5p ./ || echo "No .p5p files found"
-
       - name: Install GitHub CLI
         run: |
           if ! command -v gh &> /dev/null; then
@@ -159,44 +124,20 @@ jobs:
         run: |
           gh release upload ${{ github.event.inputs.tag_name || env.TAG_NAME }} "${PACKAGE_NAME}_${VERSION}_${ARCH}.deb" --clobber
 
-      - name: Upload OmniOS package to release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          for file in *.p5p; do
-            if [ -f "$file" ]; then
-              echo "Uploading $file..."
-              gh release upload ${{ github.event.inputs.tag_name || env.TAG_NAME }} "$file" --clobber
-            fi
-          done
-
-      - name: Publish OmniOS package to repository
-        run: |
-          ssh ghrunner@omnios.packages.startcloud.com "
-            cd /local/builds/web-terminal &&
-            pfexec pkgsend publish -d proto -s file:///local/public/r151054/pkg web-terminal.p5m.final &&
-            pfexec pkgrepo refresh -s /local/public/r151054/pkg &&
-            pfexec svcadm restart pkg/server:r151054_STARTcloud
-          "
-
-      - name: Clean up OmniOS build directory
-        run: |
-          ssh ghrunner@omnios.packages.startcloud.com "rm -rf /local/builds/web-terminal/*"
-
       - name: Upload Debian package to repository server
         run: |
-          rsync -av web-terminal_*.deb startcloud@172.17.204.177:/tmp/
+          rsync -av web-terminal_*.deb startcloud@public.debian.packages.startcloud.com:/tmp/
 
       - name: Add package to repository pool
         run: |
-          ssh startcloud@172.17.204.177 "
+          ssh startcloud@public.debian.packages.startcloud.com "
             mkdir -p /local/public/debian/pool/main/z/web-terminal
             cp /tmp/web-terminal_*.deb /local/public/debian/pool/main/z/web-terminal/
           "
 
       - name: Create multi-suite directory structure
         run: |
-          ssh startcloud@172.17.204.177 "
+          ssh startcloud@public.debian.packages.startcloud.com "
             cd /local/public/debian
             # Create suite directories if they don't exist
             mkdir -p dists/bookworm/main/binary-amd64
@@ -205,7 +146,7 @@ jobs:
 
       - name: Update repository Packages files for all suites
         run: |
-          ssh startcloud@172.17.204.177 "
+          ssh startcloud@public.debian.packages.startcloud.com "
             cd /local/public/debian
             # Generate Packages files for each suite
             for suite in bookworm trixie; do
@@ -216,7 +157,7 @@ jobs:
 
       - name: Generate Release files for all suites
         run: |
-          ssh startcloud@172.17.204.177 "
+          ssh startcloud@public.debian.packages.startcloud.com "
             cd /local/public/debian
             # Generate Release files for each suite
             for suite in bookworm trixie; do
@@ -228,7 +169,7 @@ jobs:
 
       - name: Create stable distribution with proper Release file
         run: |
-          ssh startcloud@172.17.204.177 "
+          ssh startcloud@public.debian.packages.startcloud.com "
             cd /local/public/debian/dists
             rm -rf stable 2>/dev/null || true
             cp -r trixie stable
@@ -238,7 +179,7 @@ jobs:
 
       - name: Sign repository for all suites including stable
         run: |
-          ssh startcloud@172.17.204.177 "
+          ssh startcloud@public.debian.packages.startcloud.com "
             cd /local/public/debian
             # Sign each suite including stable
             for suite in bookworm trixie stable; do
@@ -254,4 +195,4 @@ jobs:
 
       - name: Cleanup temporary files
         run: |
-          ssh startcloud@172.17.204.177 "rm -f /tmp/web-terminal_*.deb"
+          ssh startcloud@public.debian.packages.startcloud.com "rm -f /tmp/web-terminal_*.deb"

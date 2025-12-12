@@ -1,9 +1,10 @@
 import fs from 'fs';
-import { join, dirname } from 'path';
+import { join, dirname, basename } from 'path';
 import { fileURLToPath } from 'url';
 import yaml from 'js-yaml';
 import jsonMerger from 'json-merger';
 import { randomBytes } from 'crypto';
+import { t } from './i18n.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -54,7 +55,7 @@ class ConfigMigrator {
       };
     } catch (error) {
       // Use fallback logging since logger might not be initialized yet
-      console.warn('Config migration check failed:', error.message);
+      console.warn(t('config.migrationCheckFailed'), error.message);
       return { needed: false, reason: 'error', error: error.message };
     }
   }
@@ -66,13 +67,16 @@ class ConfigMigrator {
     const migrationCheck = this.isMigrationNeeded();
 
     if (!migrationCheck.needed) {
-      console.log(`Config migration: ${migrationCheck.reason}`);
+      console.log(t('config.migrationStatus', { reason: migrationCheck.reason }));
       return { success: true, action: 'none', reason: migrationCheck.reason };
     }
 
-    console.log(`Config migration needed: ${migrationCheck.reason}`);
+    console.log(t('config.migrationNeeded', { reason: migrationCheck.reason }));
     console.log(
-      `App version: ${migrationCheck.appVersion}, Config version: ${migrationCheck.configVersion || 'none'}`
+      t('config.versionInfo', { 
+        appVersion: migrationCheck.appVersion, 
+        configVersion: migrationCheck.configVersion || 'none' 
+      })
     );
 
     try {
@@ -81,7 +85,7 @@ class ConfigMigrator {
         const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
         const backupPath = `${this.userConfigPath}.backup.${timestamp}`;
         fs.copyFileSync(this.userConfigPath, backupPath);
-        console.log(`Created backup: ${backupPath}`);
+        console.log(t('config.backupCreated', { path: backupPath }));
       }
 
       // Handle fresh install
@@ -91,10 +95,10 @@ class ConfigMigrator {
 
       // Handle migration - merge template with user config
       const result = this.mergeConfigs();
-      console.log('Config migration completed successfully');
+      console.log(t('config.migrationCompleted'));
       return { success: true, action: 'migrated', ...result };
     } catch (error) {
-      console.error('Config migration failed:', error.message);
+      console.error(t('config.migrationFailed', { message: error.message }));
 
       // Attempt to restore backup
       const backupFiles = fs
@@ -107,9 +111,9 @@ class ConfigMigrator {
         const latestBackup = join(dirname(this.userConfigPath), backupFiles[0]);
         try {
           fs.copyFileSync(latestBackup, this.userConfigPath);
-          console.log(`Restored backup from ${latestBackup}`);
+          console.log(t('config.backupRestored', { path: latestBackup }));
         } catch (restoreError) {
-          console.error('Failed to restore backup:', restoreError.message);
+          console.error(t('config.backupRestoreFailed', { message: restoreError.message }));
         }
       }
 
@@ -142,10 +146,10 @@ class ConfigMigrator {
         })
       );
 
-      console.log(`Merged template with user config at ${this.userConfigPath}`);
+      console.log(t('config.mergedTemplate', { path: this.userConfigPath }));
       return { merged: true };
     } catch (error) {
-      throw new Error(`Config merge failed: ${error.message}`);
+      throw new Error(t('config.mergeFailed', { message: error.message }));
     }
   }
 
@@ -162,9 +166,9 @@ class ConfigMigrator {
       }
 
       config.server.config_version = appVersion;
-      console.log(`Updated config_version to ${appVersion}`);
+      console.log(t('config.versionUpdated', { version: appVersion }));
     } catch (error) {
-      console.warn('Failed to update config version:', error.message);
+      console.warn(t('config.versionUpdateFailed', { message: error.message }));
     }
   }
 
@@ -190,18 +194,18 @@ class ConfigMigrator {
       // Generate new JWT secret
       const jwtSecret = randomBytes(32).toString('hex');
       config.authentication.jwt_secret = jwtSecret;
-      console.log('Generated new JWT secret');
+      console.log(t('config.jwtSecretGenerated'));
 
       // Also save to file for postinst compatibility (if needed by other scripts)
       const jwtSecretPath = join(dirname(this.userConfigPath), '.jwt-secret');
       try {
         fs.writeFileSync(jwtSecretPath, jwtSecret);
-        console.log(`JWT secret saved to ${jwtSecretPath}`);
+        console.log(t('config.jwtSecretSaved', { path: jwtSecretPath }));
       } catch (error) {
-        console.warn('Failed to save JWT secret file:', error.message);
+        console.warn(t('config.jwtSecretSaveFailed', { message: error.message }));
       }
     } else {
-      console.log('Using existing JWT secret from user config');
+      console.log(t('config.jwtSecretExisting'));
     }
   }
 
@@ -226,7 +230,7 @@ class ConfigMigrator {
       })
     );
 
-    console.log(`Fresh install: Processed template to ${this.userConfigPath}`);
+    console.log(t('config.freshInstallProcessed', { path: this.userConfigPath }));
     return { success: true, action: 'fresh_install' };
   }
 
@@ -237,7 +241,7 @@ class ConfigMigrator {
     const configDir = dirname(this.userConfigPath);
     if (!fs.existsSync(configDir)) {
       fs.mkdirSync(configDir, { recursive: true });
-      console.log(`Created config directory: ${configDir}`);
+      console.log(t('config.directoryCreated', { dir: configDir }));
     }
   }
 }

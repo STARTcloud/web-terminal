@@ -3,6 +3,7 @@ import { Op } from 'sequelize';
 import configLoader from '../config/configLoader.js';
 import { getRevokedTokenModel } from '../models/RevokedToken.js';
 import { authLogger as logger } from '../config/logger.js';
+import { t } from '../config/i18n.js';
 
 /**
  * Track an issued JWT token
@@ -22,7 +23,7 @@ export const trackIssuedToken = async (jti, sub, sid, exp) => {
     revocation_reason: null,
   });
 
-  logger.info('Tracked issued token', { jti, sub, sid });
+  logger.info(t('logs.trackedIssuedToken'), { jti, sub, sid });
 };
 
 /**
@@ -62,7 +63,7 @@ export const checkTokenRevocation = async (req, res, next) => {
     });
 
     if (revokedToken) {
-      logger.warn('Revoked token used', {
+      logger.warn(t('logs.revokedTokenUsed'), {
         jti: decoded.jti,
         sub: decoded.sub,
         sid: decoded.sid,
@@ -73,14 +74,14 @@ export const checkTokenRevocation = async (req, res, next) => {
 
       return res.status(401).json({
         success: false,
-        message: 'Token has been revoked',
+        message: t('auth.tokenRevoked'),
         error: 'token_revoked',
       });
     }
 
     return next();
   } catch (error) {
-    logger.error('Token revocation check error', { error: error.message });
+    logger.error(t('logs.tokenRevocationCheckError'), { error: error.message });
     return next();
   }
 };
@@ -112,7 +113,7 @@ export const revokeUserTokens = async (sub, sid, reason = 'backchannel_logout') 
   }
 
   if (whereConditions.length === 0) {
-    logger.warn('No revocation conditions met', { sub, sid, revocationScope });
+    logger.warn(t('logs.noRevocationConditions'), { sub, sid, revocationScope });
     return;
   }
 
@@ -130,7 +131,7 @@ export const revokeUserTokens = async (sub, sid, reason = 'backchannel_logout') 
     }
   );
 
-  logger.info('Revoked tokens', {
+  logger.info(t('logs.revokedTokens'), {
     count: updated[0],
     sub,
     sid,

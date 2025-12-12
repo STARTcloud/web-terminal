@@ -66,7 +66,7 @@ const initializeI18n = async () => {
     },
 
     // Namespaces
-    ns: ["common", "auth"],
+    ns: ["common", "auth", "terminal"],
     defaultNS: "common",
 
     // Interpolation options

@@ -1,9 +1,10 @@
 import { existsSync } from 'fs';
 import path from 'path';
 import { logAccess, logger } from '../config/logger.js';
+import { t } from '../config/i18n.js';
 
 export const errorHandler = (err, req, res, next) => {
-  logger.error('Express error handler', { error: err.message, stack: err.stack });
+  logger.error(t('logs.expressErrorHandler'), { error: err.message, stack: err.stack });
 
   if (req) {
     logAccess(req, 'ERROR', err.message);
@@ -22,5 +23,5 @@ export const errorHandler = (err, req, res, next) => {
   }
 
   // Fallback to plain message if React app not available
-  return res.status(500).send('Internal server error');
+  return res.status(500).send(t('api.internalServerError'));
 };

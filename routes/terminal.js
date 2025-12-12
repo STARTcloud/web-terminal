@@ -5,6 +5,7 @@ import { Op } from 'sequelize';
 import { getTerminalSessionModel } from '../models/TerminalSession.js';
 import { logger } from '../config/logger.js';
 import { requireAuthentication } from '../middleware/auth.middleware.js';
+import { t } from '../config/i18n.js';
 
 const router = express.Router();
 
@@ -24,12 +25,12 @@ const isSessionHealthy = sessionId => {
       process.kill(ptyProcess.pid, 0);
       return true;
     } catch (pidError) {
-      logger.debug('Process no longer exists', { pid: ptyProcess.pid, error: pidError.message });
+      logger.debug(t('logs.processNoLongerExists'), { pid: ptyProcess.pid, error: pidError.message });
       activePtyProcesses.delete(sessionId);
       return false;
     }
   } catch (error) {
-    logger.error('Error checking terminal session health', {
+    logger.error(t('logs.errorCheckingSessionHealth'), {
       error: error.message,
       session_id: sessionId,
     });
@@ -46,7 +47,7 @@ const createSessionRecord = async terminalCookie => {
     status: 'connecting',
   });
 
-  logger.debug('Terminal session record created', {
+  logger.debug(t('logs.sessionRecordCreated'), {
     terminal_cookie: terminalCookie,
   });
 
@@ -69,14 +70,14 @@ const spawnPtyProcessAsync = async session => {
 
     activePtyProcesses.set(session.id, ptyProcess);
 
-    logger.info('PTY process spawned successfully', {
+    logger.info(t('logs.ptyProcessSpawned'), {
       session_id: session.id,
       terminal_cookie: session.terminal_cookie,
       pid: ptyProcess.pid,
     });
 
     ptyProcess.on('exit', (code, signal) => {
-      logger.info('PTY process exited', {
+      logger.info(t('logs.ptyProcessExited'), {
         session_id: session.id,
         terminal_cookie: session.terminal_cookie,
         exit_code: code,
@@ -86,7 +87,7 @@ const spawnPtyProcessAsync = async session => {
       session.update({ status: 'closed' });
     });
   } catch (error) {
-    logger.error('Failed to spawn PTY process', {
+    logger.error(t('logs.failedToSpawnPty'), {
       session_id: session.id,
       terminal_cookie: session.terminal_cookie,
       error: error.message,
@@ -123,7 +124,7 @@ const cleanupInactiveSessions = async () => {
 
     const cleanedCount = inactiveSessions.length;
     if (cleanedCount > 0) {
-      logger.info('Terminal cleanup completed', {
+      logger.info(t('logs.terminalCleanupCompleted'), {
         cleaned_sessions: cleanedCount,
         timeout_minutes: SESSION_TIMEOUT_MINUTES,
       });
@@ -131,7 +132,7 @@ const cleanupInactiveSessions = async () => {
 
     return cleanedCount;
   } catch (error) {
-    logger.error('Error during terminal session cleanup', {
+    logger.error(t('logs.errorDuringCleanup'), {
       error: error.message,
       timeout_minutes: SESSION_TIMEOUT_MINUTES,
     });
@@ -148,7 +149,7 @@ router.post('/start', requireAuthentication, async (req, res) => {
     if (!terminal_cookie) {
       return res.status(400).json({
         success: false,
-        error: 'terminal_cookie is required',
+        error: t('terminal.cookieRequired'),
       });
     }
 
@@ -170,7 +171,7 @@ router.post('/start', requireAuthentication, async (req, res) => {
           last_accessed: new Date(),
         });
 
-        logger.info('Terminal session reused', {
+        logger.info(t('logs.terminalSessionReused'), {
           terminal_cookie,
           session_id: existingSession.id,
         });
@@ -196,7 +197,7 @@ router.post('/start', requireAuthentication, async (req, res) => {
         activePtyProcesses.delete(existingSession.id);
       }
       await existingSession.destroy();
-      logger.debug('Cleaned up unhealthy terminal session', {
+      logger.debug(t('logs.cleanedUpUnhealthySession'), {
         terminal_cookie,
         session_id: existingSession.id,
       });
@@ -212,7 +213,7 @@ router.post('/start', requireAuthentication, async (req, res) => {
         if (!session) {
           throw new Error('Uniqueness error but session not found');
         }
-        logger.warn('Terminal session collision resolved', {
+        logger.warn(t('logs.sessionCollisionResolved'), {
           terminal_cookie,
         });
       } else {
@@ -221,7 +222,7 @@ router.post('/start', requireAuthentication, async (req, res) => {
     }
 
     spawnPtyProcessAsync(session).catch(error => {
-      logger.error('Async PTY spawn failed', {
+      logger.error(t('logs.asyncPtySpawnFailed'), {
         session_id: session.id,
         terminal_cookie,
         error: error.message,
@@ -240,30 +241,30 @@ router.post('/start', requireAuthentication, async (req, res) => {
       },
     });
   } catch (error) {
-    logger.error('Terminal session start failed', {
+    logger.error(t('logs.terminalSessionStartFailed'), {
       terminal_cookie: req.body.terminal_cookie,
       error: error.message,
     });
     return res.status(500).json({
       success: false,
-      error: 'Failed to start terminal session',
+      error: t('terminal.sessionFailed'),
     });
   }
 });
 
 router.get('/sessions', requireAuthentication, async (req, res) => {
   try {
-    logger.debug('Listing terminal sessions', { user: req.user?.email || req.user?.username });
+    logger.debug(t('logs.listingTerminalSessions'), { user: req.user?.email || req.user?.username });
     const TerminalSession = getTerminalSessionModel();
     const sessions = await TerminalSession.findAll({
       order: [['created_at', 'DESC']],
     });
     res.json(sessions);
   } catch (error) {
-    logger.error('Error listing terminal sessions', {
+    logger.error(t('logs.errorListingSessions'), {
       error: error.message,
     });
-    res.status(500).json({ error: 'Failed to list terminal sessions' });
+    res.status(500).json({ error: t('terminal.listSessionsFailed') });
   }
 });
 
@@ -283,13 +284,13 @@ router.delete('/sessions/:sessionId/stop', requireAuthentication, async (req, re
       await session.update({ status: 'closed' });
     }
 
-    res.json({ success: true, message: 'Terminal session stopped.' });
+    res.json({ success: true, message: t('terminal.sessionStopped') });
   } catch (error) {
-    logger.error('Error stopping terminal session', {
+    logger.error(t('logs.errorStoppingSession'), {
       error: error.message,
       session_id: req.params.sessionId,
     });
-    res.status(500).json({ error: 'Failed to stop terminal session' });
+    res.status(500).json({ error: t('terminal.stopSessionFailed') });
   }
 });
 

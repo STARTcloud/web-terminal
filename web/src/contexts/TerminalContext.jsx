@@ -49,16 +49,16 @@ export const TerminalProvider = ({ children }) => {
       );
 
       ws.onopen = () => {
-        console.log("Terminal WebSocket connected");
+        console.log("[Terminal] WebSocket connected");
       };
 
       ws.onclose = () => {
-        console.log("Terminal WebSocket closed");
+        console.log("[Terminal] WebSocket closed");
         wsRef.current = null;
       };
 
       ws.onerror = (error) => {
-        console.error("Terminal WebSocket error:", error);
+        console.error("[Terminal] WebSocket error:", error);
       };
 
       const sessionWithWs = {

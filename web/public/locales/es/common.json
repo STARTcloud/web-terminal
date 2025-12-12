@@ -95,5 +95,48 @@
   "breadcrumbs": {
     "web-terminal": "Web-Terminal",
     "home": "Inicio"
+  },
+  "swagger": {
+    "title": "Documentación API",
+    "placeholder": "La documentación de Swagger estará disponible aquí."
+  },
+  "languageNames": {
+    "en": "English",
+    "es": "Español",
+    "fr": "Français",
+    "de": "Deutsch",
+    "it": "Italiano",
+    "pt": "Português",
+    "ru": "Русский",
+    "zh": "中文",
+    "ja": "日本語",
+    "ko": "한국어",
+    "ar": "العربية",
+    "hi": "हिन्दी",
+    "nl": "Nederlands",
+    "sv": "Svenska",
+    "da": "Dansk",
+    "no": "Norsk",
+    "fi": "Suomi",
+    "pl": "Polski",
+    "cs": "Čeština",
+    "hu": "Magyar",
+    "ro": "Română",
+    "bg": "Български",
+    "hr": "Hrvatski",
+    "sk": "Slovenčina",
+    "sl": "Slovenščina",
+    "et": "Eesti",
+    "lv": "Latviešu",
+    "lt": "Lietuvių",
+    "el": "Ελληνικά",
+    "tr": "Türkçe",
+    "he": "עברית",
+    "th": "ไทย",
+    "vi": "Tiếng Việt",
+    "id": "Bahasa Indonesia",
+    "ms": "Bahasa Melayu",
+    "tl": "Filipino",
+    "sw": "Kiswahili"
   }
 }

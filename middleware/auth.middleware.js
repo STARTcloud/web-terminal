@@ -1,11 +1,12 @@
 import jwt from 'jsonwebtoken';
 import configLoader from '../config/configLoader.js';
 import { logAccess, authLogger as logger } from '../config/logger.js';
+import { t } from '../config/i18n.js';
 
 const checkJwtAuth = req => {
   const token = req.cookies?.auth_token;
 
-  logger.info('JWT auth check', {
+  logger.info(t('logs.jwtAuthCheck'), {
     hasToken: !!token,
     cookies: Object.keys(req.cookies || {}),
   });
@@ -18,7 +19,7 @@ const checkJwtAuth = req => {
     const authConfig = configLoader.getAuthenticationConfig();
     const decoded = jwt.verify(token, authConfig.jwt_secret);
 
-    logger.info('JWT decoded successfully', {
+    logger.info(t('logs.jwtDecodedSuccessfully'), {
       userId: decoded.userId,
       email: decoded.email,
       authType: decoded.authType,
@@ -28,7 +29,7 @@ const checkJwtAuth = req => {
     req.user = decoded;
     return true;
   } catch (error) {
-    logger.error('JWT verification failed', { error: error.message });
+    logger.error(t('logs.jwtVerificationFailed'), { error: error.message });
     return false;
   }
 };
@@ -46,6 +47,6 @@ export const requireAuthentication = (req, res, next) => {
   logAccess(req, 'AUTH_FAILED', 'No valid JWT token');
   return res.status(401).json({
     success: false,
-    message: 'Authentication required',
+    message: t('api.authenticationRequired'),
   });
 };

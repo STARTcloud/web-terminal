@@ -9,7 +9,7 @@ import session from 'express-session';
 import lusca from 'lusca';
 import passport from 'passport';
 import configLoader from './config/configLoader.js';
-import { configAwareI18nMiddleware } from './config/i18n.js';
+import { configAwareI18nMiddleware, t } from './config/i18n.js';
 import { initializeDatabase } from './config/database.js';
 import { setupPassportStrategies } from './config/passport.js';
 import { morganMiddleware, logger } from './config/logger.js';
@@ -41,7 +41,7 @@ const startServer = async () => {
   if (corsConfig.allow_origin === true && corsConfig.whitelist && corsConfig.whitelist.length > 0) {
     // Use whitelist from config for production
     origin = corsConfig.whitelist;
-    logger.info('CORS enabled with whitelist', { whitelist: corsConfig.whitelist });
+    logger.info(t('app.corsEnabled'), { whitelist: corsConfig.whitelist });
   }
 
   const corsOptions = {
@@ -73,7 +73,7 @@ const startServer = async () => {
     );
     app.use(express.static(frontendDistPath));
   } else {
-    logger.warn('Frontend dist directory not found. Run "npm run build" to build the frontend.');
+    logger.warn(t('app.frontendDistNotFound'));
   }
 
   // Enhanced security headers with configurable CSP
@@ -202,7 +202,7 @@ const startServer = async () => {
     '/static',
     express.static('web/public', {
       setHeaders: (response, filePath) => {
-        logger.debug('Setting headers for static file', { filePath });
+        logger.debug(t('app.settingHeadersForStatic'), { filePath });
         if (filePath.endsWith('.css')) {
           response.setHeader('Content-Type', 'text/css');
         }
@@ -211,7 +211,7 @@ const startServer = async () => {
   );
 
   if (configLoader.getServerConfig().enable_api_docs) {
-    logger.info('Endpoint documentation enabled at /api-docs (React implementation)');
+    logger.info(t('app.apiDocsEnabled'));
   }
 
   // React app catch-all for client-side routing
@@ -247,7 +247,7 @@ const startServer = async () => {
         const termMatch = url.pathname.match(/^\/ws\/terminal\/(?<sessionId>[^/]+)$/);
 
         if (!termMatch) {
-          logger.debug('WebSocket upgrade rejected: URL does not match terminal pattern', {
+          logger.debug(t('websocket.upgradeRejected'), {
             pathname: url.pathname,
           });
           socket.destroy();
@@ -258,18 +258,18 @@ const startServer = async () => {
         const ptyProcess = getPtyProcess(sessionId);
 
         if (!ptyProcess) {
-          logger.warn('WebSocket upgrade failed: PTY process not found', { sessionId });
+          logger.warn(t('websocket.ptyProcessNotFound'), { sessionId });
           socket.destroy();
           return;
         }
 
-        logger.info('WebSocket terminal connected', { sessionId });
+        logger.info(t('websocket.terminalConnected'), { sessionId });
 
         const { WebSocketServer } = await import('ws');
         const wss = new WebSocketServer({ noServer: true });
 
         wss.handleUpgrade(request, socket, head, clientWs => {
-          logger.info('Client WebSocket established for terminal', { sessionId });
+          logger.info(t('websocket.clientEstablished'), { sessionId });
 
           clientWs.on('message', data => {
             try {
@@ -277,7 +277,7 @@ const startServer = async () => {
               const message = JSON.parse(data);
               if (message.type === 'resize' && message.cols && message.rows) {
                 ptyProcess.resize(message.cols, message.rows);
-                logger.debug('PTY resized', {
+                logger.debug(t('websocket.ptyResized'), {
                   sessionId,
                   cols: message.cols,
                   rows: message.rows,
@@ -297,22 +297,22 @@ const startServer = async () => {
           });
 
           clientWs.on('close', () => {
-            logger.info('WebSocket terminal disconnected', { sessionId });
+            logger.info(t('websocket.terminalDisconnected'), { sessionId });
           });
 
           clientWs.on('error', error => {
-            logger.error('WebSocket error', { sessionId, error: error.message });
+            logger.error(t('websocket.error'), { sessionId, error: error.message });
           });
         });
       } catch (error) {
-        logger.error('WebSocket upgrade error', { error: error.message });
+        logger.error(t('websocket.upgradeError'), { error: error.message });
         socket.destroy();
       }
     });
   } else {
-    logger.info('Starting HTTP server instead...');
+    logger.info(t('app.startingHttpServer'));
     app.listen(port, () => {
-      logger.info(`HTTP Server running at http://localhost:${port}`);
+      logger.info(t('app.httpServerRunning', { port }));
     });
   }
 };

@@ -2,6 +2,7 @@ import express from 'express';
 import configLoader from '../config/configLoader.js';
 import { sseLogger as logger } from '../config/logger.js';
 import { requireAuthentication } from '../middleware/auth.middleware.js';
+import { t } from '../config/i18n.js';
 
 const router = express.Router();
 
@@ -84,13 +85,13 @@ router.get('/', requireAuthentication, (req, res) => {
   };
   clients.push(newClient);
 
-  logger.info('SSE client connected', {
+  logger.info(t('logs.sseClientConnected'), {
     clientId,
     total: clients.length,
   });
 
   req.on('close', () => {
-    logger.info('SSE client disconnected', {
+    logger.info(t('logs.sseClientDisconnected'), {
       clientId,
       total: clients.length - 1,
     });
@@ -99,7 +100,7 @@ router.get('/', requireAuthentication, (req, res) => {
 });
 
 export const sendChecksumUpdate = (filePath, checksum, fileStats = null) => {
-  logger.info('SSE: Sending checksum update', {
+  logger.info(t('logs.sseSendingChecksumUpdate'), {
     filePath,
     checksum: `${checksum.substring(0, 8)}...`,
   });
@@ -120,18 +121,18 @@ export const sendChecksumUpdate = (filePath, checksum, fileStats = null) => {
       client.response.write(`event: checksum-update\n`);
       client.response.write(`data: ${eventData}\n\n`);
     } catch (error) {
-      logger.error('Error sending SSE message', { error: error.message });
+      logger.error(t('logs.errorSendingSseMessage'), { error: error.message });
       // Remove failed client
       clients = clients.filter(c => c.id !== client.id);
     }
   });
 
-  logger.info('SSE: Event sent successfully');
+  logger.info(t('logs.sseEventSentSuccessfully'));
 };
 
 // Function to broadcast file deletion events
 export const sendFileDeleted = (filePath, isDirectory = false) => {
-  logger.info('SSE: Sending file deletion event', {
+  logger.info(t('logs.sseSendingFileDeletionEvent'), {
     filePath,
     isDirectory,
   });
@@ -149,17 +150,17 @@ export const sendFileDeleted = (filePath, isDirectory = false) => {
       client.response.write(`event: file-deleted\n`);
       client.response.write(`data: ${eventData}\n\n`);
     } catch (error) {
-      logger.error('Error sending SSE delete message', { error: error.message });
+      logger.error(t('logs.errorSendingSseDeleteMessage'), { error: error.message });
       clients = clients.filter(c => c.id !== client.id);
     }
   });
 
-  logger.info('SSE: File deletion event sent successfully');
+  logger.info(t('logs.sseFileDeletionEventSent'));
 };
 
 // Function to broadcast file addition events
 export const sendFileAdded = (filePath, fileStats = null) => {
-  logger.info('SSE: Sending file addition event', {
+  logger.info(t('logs.sseSendingFileAdditionEvent'), {
     filePath,
   });
 
@@ -177,17 +178,17 @@ export const sendFileAdded = (filePath, fileStats = null) => {
       client.response.write(`event: file-added\n`);
       client.response.write(`data: ${eventData}\n\n`);
     } catch (error) {
-      logger.error('Error sending SSE file addition message', { error: error.message });
+      logger.error(t('logs.errorSendingSseFileAdditionMessage'), { error: error.message });
       clients = clients.filter(c => c.id !== client.id);
     }
   });
 
-  logger.info('SSE: File addition event sent successfully');
+  logger.info(t('logs.sseFileAdditionEventSent'));
 };
 
 // Function to broadcast folder creation events
 export const sendFolderCreated = folderPath => {
-  logger.info('SSE: Sending folder creation event', {
+  logger.info(t('logs.sseSendingFolderCreationEvent'), {
     folderPath,
   });
 
@@ -203,17 +204,17 @@ export const sendFolderCreated = folderPath => {
       client.response.write(`event: folder-created\n`);
       client.response.write(`data: ${eventData}\n\n`);
     } catch (error) {
-      logger.error('Error sending SSE folder creation message', { error: error.message });
+      logger.error(t('logs.errorSendingFolderCreationMessage'), { error: error.message });
       clients = clients.filter(c => c.id !== client.id);
     }
   });
 
-  logger.info('SSE: Folder creation event sent successfully');
+  logger.info(t('logs.sseFolderCreationEventSent'));
 };
 
 // Function to broadcast file/folder rename events
 export const sendFileRenamed = (oldPath, newPath, isDirectory = false) => {
-  logger.info('SSE: Sending file rename event', {
+  logger.info(t('logs.sseSendingFileRenameEvent'), {
     oldPath,
     newPath,
     isDirectory,
@@ -233,17 +234,17 @@ export const sendFileRenamed = (oldPath, newPath, isDirectory = false) => {
       client.response.write(`event: file-renamed\n`);
       client.response.write(`data: ${eventData}\n\n`);
     } catch (error) {
-      logger.error('Error sending SSE rename message', { error: error.message });
+      logger.error(t('logs.errorSendingSseRenameMessage'), { error: error.message });
       clients = clients.filter(c => c.id !== client.id);
     }
   });
 
-  logger.info('SSE: File rename event sent successfully');
+  logger.info(t('logs.sseFileRenameEventSent'));
 };
 
 // Function to broadcast checksum progress updates
 export const sendChecksumProgress = progressData => {
-  logger.info('SSE: Sending checksum progress event', {
+  logger.info(t('logs.sseSendingChecksumProgressEvent'), {
     total: progressData.total,
     complete: progressData.complete,
     percentage: progressData.percentage,
@@ -261,12 +262,12 @@ export const sendChecksumProgress = progressData => {
       client.response.write(`event: checksum-progress\n`);
       client.response.write(`data: ${eventData}\n\n`);
     } catch (error) {
-      logger.error('Error sending SSE progress message', { error: error.message });
+      logger.error(t('logs.errorSendingSseProgressMessage'), { error: error.message });
       clients = clients.filter(c => c.id !== client.id);
     }
   });
 
-  logger.info('SSE: Checksum progress event sent successfully');
+  logger.info(t('logs.sseChecksumProgressEventSent'));
 };
 
 export default router;

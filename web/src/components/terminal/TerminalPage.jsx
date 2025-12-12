@@ -3,12 +3,14 @@ import { FitAddon } from "@xterm/addon-fit";
 import { WebLinksAddon } from "@xterm/addon-web-links";
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useXTerm } from "react-xtermjs";
 
 import { useTerminal } from "../../contexts/TerminalContext";
 import { useAuth } from "../auth/AuthContext";
 
 const TerminalPage = () => {
+  const { t } = useTranslation(["common", "terminal"]);
   const { user, logout } = useAuth();
   const { session, createSession, restartSession } = useTerminal();
   const navigate = useNavigate();
@@ -167,8 +169,8 @@ const TerminalPage = () => {
         }}
       >
         <span style={{ color: "#fff", fontSize: "0.9rem" }}>
-          Web Terminal - {user.email || user.username}
-          {!isReady ? " (connecting...)" : ""}
+          {t("terminal:pageTitle")} - {user.email || user.username}
+          {!isReady ? ` (${t("terminal:connecting")})` : ""}
         </span>
         <div style={{ display: "flex", gap: "0.5rem" }}>
           <button
@@ -182,7 +184,7 @@ const TerminalPage = () => {
               cursor: "pointer",
             }}
           >
-            Reconnect
+            {t("terminal:reconnect")}
           </button>
           <button
             onClick={logout}
@@ -195,7 +197,7 @@ const TerminalPage = () => {
               cursor: "pointer",
             }}
           >
-            Logout
+            {t("terminal:logout")}
           </button>
         </div>
       </div>
@@ -212,7 +214,7 @@ const TerminalPage = () => {
               height: "100%",
             }}
           >
-            Loading terminal...
+            {t("terminal:loadingTerminal")}
           </div>
         ) : (
           <div ref={ref} style={{ height: "100%", width: "100%" }} />

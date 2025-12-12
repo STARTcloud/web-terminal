@@ -4,6 +4,7 @@ import { databaseLogger } from './logger.js';
 import { initializeUserModel } from '../models/User.js';
 import { initializeRevokedTokenModel } from '../models/RevokedToken.js';
 import { initializeTerminalSessionModel } from '../models/TerminalSession.js';
+import { t } from './i18n.js';
 
 let sequelize = null;
 
@@ -71,23 +72,23 @@ export const initializeDatabase = async () => {
 
   try {
     await sequelize.authenticate();
-    databaseLogger.info('Database connection established successfully');
+    databaseLogger.info(t('database.connectionEstablished'));
 
     initializeUserModel(sequelize);
     initializeRevokedTokenModel(sequelize);
     initializeTerminalSessionModel(sequelize);
 
     await sequelize.sync({ alter: false });
-    databaseLogger.info('Database synchronized');
+    databaseLogger.info(t('database.synchronized'));
 
     if (sequelize.getDialect() === 'sqlite') {
       await sequelize.query('PRAGMA optimize=0x10002');
-      databaseLogger.info('SQLite optimization pragmas applied');
+      databaseLogger.info(t('database.sqliteOptimizationApplied'));
     }
 
     return sequelize;
   } catch (error) {
-    databaseLogger.error(`Unable to connect to database: ${error.message}`);
+    databaseLogger.error(t('database.unableToConnect', { message: error.message }));
     throw error;
   }
 };
@@ -114,16 +115,16 @@ export const optimizeDatabase = async () => {
   try {
     if (sequelize.getDialect() === 'sqlite') {
       await sequelize.query('PRAGMA optimize');
-      databaseLogger.info('SQLite database optimization completed');
+      databaseLogger.info(t('database.sqliteOptimizationCompleted'));
     } else if (sequelize.getDialect() === 'postgres') {
       await sequelize.query('ANALYZE');
-      databaseLogger.info('PostgreSQL database analysis completed');
+      databaseLogger.info(t('database.postgresAnalysisCompleted'));
     } else if (sequelize.getDialect() === 'mysql') {
       await sequelize.query('ANALYZE TABLE files');
-      databaseLogger.info('MySQL table analysis completed');
+      databaseLogger.info(t('database.mysqlAnalysisCompleted'));
     }
   } catch (error) {
-    databaseLogger.error(`Database optimization failed: ${error.message}`);
+    databaseLogger.error(t('database.optimizationFailed', { message: error.message }));
   }
 };
 

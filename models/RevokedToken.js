@@ -1,5 +1,7 @@
 import { DataTypes } from 'sequelize';
 import { getSequelize } from '../config/database.js';
+import { t } from '../config/i18n.js';
+import { logger } from '../config/logger.js';
 
 let RevokedToken;
 
@@ -90,7 +92,7 @@ export const cleanupExpiredTokens = async () => {
   });
 
   if (deleted > 0) {
-    console.log(`Cleaned up ${deleted} expired revoked tokens`);
+    logger.info(t('tokens.cleanedExpired', { count: deleted }));
   }
 
   return deleted;

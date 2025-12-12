@@ -5,6 +5,7 @@ import { URL } from 'url';
 import configLoader from './configLoader.js';
 import { getUserModel } from '../models/User.js';
 import { authLogger as logger } from './logger.js';
+import { t } from './i18n.js';
 
 // Store OIDC configurations globally
 const oidcConfigurations = new Map();
@@ -139,7 +140,7 @@ export const handleOidcUser = async (provider, userinfo) => {
         const userName = cnMatch.groups.name.toLowerCase().replace(/\s+/g, '.');
         email = `${userName}@${fallbackDomain}`;
 
-        logger.info('Converted DN to email using fallback_domain', {
+        logger.info(t('logs.convertedDnToEmail'), {
           originalDN: userinfo.email,
           convertedEmail: email,
           fallbackDomain,
@@ -171,9 +172,7 @@ export const handleOidcUser = async (provider, userinfo) => {
       last_login: new Date(),
     });
 
-    logger.info(
-      `Created new OIDC user: ${email} with role: ${role} and permissions: ${permissions.join(', ')}`
-    );
+    logger.info(t('logs.createdNewOidcUser', { email, role, permissions: permissions.join(', ') }));
   } else {
     const permissions = resolveUserPermissions(email, userinfo);
     const role = resolveUserRole(provider, email, userinfo);
@@ -183,9 +182,7 @@ export const handleOidcUser = async (provider, userinfo) => {
       last_login: new Date(),
     });
 
-    logger.info(
-      `Updated OIDC user: ${email} with role: ${role} and permissions: ${permissions.join(', ')}`
-    );
+    logger.info(t('logs.updatedOidcUser', { email, role, permissions: permissions.join(', ') }));
   }
 
   return user;
@@ -214,7 +211,7 @@ export const buildAuthorizationUrl = async (providerName, redirectUri, state, co
     code_challenge_method: 'S256',
   };
 
-  logger.info('=== AUTHORIZATION URL DEBUG ===', {
+  logger.info(t('logs.authorizationUrlDebug'), {
     provider: providerName,
     clientId: providerConfig.client_id,
     authParams,
@@ -222,7 +219,7 @@ export const buildAuthorizationUrl = async (providerName, redirectUri, state, co
 
   const authUrl = client.buildAuthorizationUrl(config, authParams);
 
-  logger.info('=== GENERATED AUTHORIZATION URL ===', {
+  logger.info(t('logs.generatedAuthorizationUrl'), {
     provider: providerName,
     url: authUrl.toString(),
     clientIdInUrl: authUrl.searchParams.get('client_id'),
@@ -251,7 +248,7 @@ export const buildEndSessionUrl = (providerName, postLogoutRedirectUri, state, i
     id_token_hint: idTokenHint,
   };
 
-  logger.info('=== END SESSION URL DEBUG ===', {
+  logger.info(t('logs.endSessionUrlDebug'), {
     provider: providerName,
     endSessionParams,
     endSessionEndpoint: config.serverMetadata().end_session_endpoint,
@@ -259,7 +256,7 @@ export const buildEndSessionUrl = (providerName, postLogoutRedirectUri, state, i
 
   const endSessionUrl = client.buildEndSessionUrl(config, endSessionParams);
 
-  logger.info('=== GENERATED END SESSION URL ===', {
+  logger.info(t('logs.generatedEndSessionUrl'), {
     provider: providerName,
     url: endSessionUrl.toString(),
   });
@@ -309,7 +306,7 @@ export const setupPassportStrategies = async () => {
           const user = await User.findByPk(payload.userId);
 
           if (!user) {
-            return done(null, false, { message: 'Invalid token - user not found' });
+            return done(null, false, { message: t('auth.invalidTokenUserNotFound') });
           }
 
           return done(null, {
@@ -321,7 +318,7 @@ export const setupPassportStrategies = async () => {
             role: user.role,
           });
         } catch (error) {
-          logger.error('JWT Strategy error', { error: error.message });
+          logger.error(t('logs.jwtStrategyError'), { error: error.message });
           return done(error, false);
         }
       }
@@ -335,17 +332,17 @@ export const setupPassportStrategies = async () => {
     .filter(([, providerConfig]) => providerConfig.enabled)
     .filter(([providerName, providerConfig]) => {
       if (!providerConfig.issuer || !providerConfig.client_id || !providerConfig.client_secret) {
-        logger.error(`Invalid OIDC provider configuration: ${providerName}`);
+        logger.error(t('logs.invalidOidcProviderConfig', { provider: providerName }));
         return false;
       }
       return true;
     })
     .map(async ([providerName, providerConfig]) => {
       try {
-        logger.info(`Setting up OIDC provider: ${providerName}`);
+        logger.info(t('logs.settingUpOidcProvider', { provider: providerName }));
 
         const authMethod = providerConfig.token_endpoint_auth_method || 'client_secret_basic';
-        logger.info(`Using auth method: ${authMethod} for provider: ${providerName}`);
+        logger.info(t('logs.usingAuthMethod', { authMethod, provider: providerName }));
 
         // Create custom fetch function for debugging and Basic auth fix
         const customFetch = async (url, options = {}) => {
@@ -354,7 +351,7 @@ export const setupPassportStrategies = async () => {
             const credentials = `${providerConfig.client_id}:${providerConfig.client_secret}`;
             const base64Credentials = Buffer.from(credentials, 'utf-8').toString('base64');
 
-            logger.info('=== CUSTOM BASIC AUTH FIX ===', {
+            logger.info(t('logs.customBasicAuthFix'), {
               originalCredentials: credentials,
               base64Encoded: base64Credentials,
               authHeader: `Basic ${base64Credentials}`,
@@ -367,7 +364,7 @@ export const setupPassportStrategies = async () => {
           }
 
           // Debug logging
-          logger.debug('=== DEBUGGING OUTGOING HTTP REQUEST ===', {
+          logger.debug(t('logs.debuggingOutgoingHttpRequest'), {
             url: url.toString(),
             method: options.method || 'GET',
             headers: options.headers || {},
@@ -378,7 +375,7 @@ export const setupPassportStrategies = async () => {
           // Special attention to Authorization header
           if (options.headers?.authorization || options.headers?.Authorization) {
             const authHeader = options.headers.authorization || options.headers.Authorization;
-            logger.info('=== AUTHORIZATION HEADER DETAILS ===', {
+            logger.info(t('logs.authorizationHeaderDetails'), {
               authHeader,
               isBasic: authHeader.startsWith('Basic '),
               length: authHeader.length,
@@ -388,13 +385,13 @@ export const setupPassportStrategies = async () => {
               const base64Part = authHeader.substring(6);
               try {
                 const decoded = Buffer.from(base64Part, 'base64').toString('utf-8');
-                logger.info('=== DECODED BASIC AUTH ===', {
+                logger.info(t('logs.decodedBasicAuth'), {
                   base64: base64Part,
                   decoded,
                   expectedPattern: 'downloads:clientsecret',
                 });
               } catch (decodeError) {
-                logger.error('=== BASIC AUTH DECODE ERROR ===', { error: decodeError.message });
+                logger.error(t('logs.basicAuthDecodeError'), { error: decodeError.message });
               }
             }
           }
@@ -402,7 +399,7 @@ export const setupPassportStrategies = async () => {
           // Call the actual fetch
           const response = await fetch(url, options);
 
-          logger.info('=== HTTP RESPONSE ===', {
+          logger.info(t('logs.httpResponse'), {
             status: response.status,
             statusText: response.statusText,
             headers: Object.fromEntries(response.headers.entries()),
@@ -441,10 +438,10 @@ export const setupPassportStrategies = async () => {
         // Store configuration for later use
         oidcConfigurations.set(providerName, config);
 
-        logger.info(`OIDC provider configured: ${providerName}`);
+        logger.info(t('logs.oidcProviderConfigured', { provider: providerName }));
         return { success: true, provider: providerName };
       } catch (error) {
-        logger.error(`Failed to setup OIDC provider ${providerName}:`, {
+        logger.error(t('logs.failedToSetupOidcProvider', { provider: providerName }), {
           message: error.message,
           stack: error.stack,
           cause: error.cause,

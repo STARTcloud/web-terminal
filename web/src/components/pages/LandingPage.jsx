@@ -42,7 +42,7 @@ const getStyles = (primaryColor) => ({
 
 const LandingPage = () => {
   const navigate = useNavigate();
-  const { t } = useTranslation(["common", "auth"]);
+  const { t } = useTranslation(["common", "auth", "terminal"]);
   const [config, setConfig] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -160,7 +160,7 @@ const LandingPage = () => {
               }}
             >
               <i className="bi bi-terminal me-2" />
-              Open Terminal
+              {t("terminal:openTerminal")}
             </button>
             <a
               href={`mailto:${supportEmail}`}

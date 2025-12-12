@@ -129,7 +129,7 @@ jobs:
 
       - name: Update repository Packages files for all suites
         run: |
-          ssh startcloud@172.17.204.177 "
+          ssh startcloud@public.debian.packages.startcloud.com "
             cd /local/public/debian
             # Generate Packages files for each suite
             for suite in bookworm trixie; do
@@ -140,7 +140,7 @@ jobs:
 
       - name: Generate Release files for all suites
         run: |
-          ssh startcloud@172.17.204.177 "
+          ssh startcloud@public.debian.packages.startcloud.com "
             cd /local/public/debian
             # Generate Release files for each suite
             for suite in bookworm trixie; do
@@ -152,7 +152,7 @@ jobs:
 
       - name: Create stable distribution with proper Release file
         run: |
-          ssh startcloud@172.17.204.177 "
+          ssh startcloud@public.debian.packages.startcloud.com "
             cd /local/public/debian/dists
             rm -rf stable 2>/dev/null || true
             cp -r trixie stable
@@ -162,7 +162,7 @@ jobs:
 
       - name: Sign repository for all suites including stable
         run: |
-          ssh startcloud@172.17.204.177 "
+          ssh startcloud@public.debian.packages.startcloud.com "
             cd /local/public/debian
             # Sign each suite including stable
             for suite in bookworm trixie stable; do
@@ -221,7 +221,7 @@ jobs:
 
       - name: Clean up
         run: |
-          ssh startcloud@172.17.204.177 "rm -f /tmp/${PACKAGE_NAME}_*.deb"
+          ssh startcloud@public.debian.packages.startcloud.com "rm -f /tmp/${PACKAGE_NAME}_*.deb"
 
       - name: Summary
         run: |

@@ -3,6 +3,7 @@ import https from 'https';
 import { execSync } from 'child_process';
 import { dirname } from 'path';
 import logger from '../config/logger.js';
+import { t } from '../config/i18n.js';
 
 export const generateSSLCertificatesIfNeeded = async sslConfig => {
   if (!sslConfig?.cert || !sslConfig?.key) {
@@ -15,14 +16,14 @@ export const generateSSLCertificatesIfNeeded = async sslConfig => {
   try {
     await fs.access(keyPath);
     await fs.access(certPath);
-    logger.info('SSL certificates already exist');
+    logger.info(t('ssl.certificatesExist'));
     return false;
   } catch {
     // Certificates don't exist, generate them
   }
 
   try {
-    logger.info('Generating SSL certificates...');
+    logger.info(t('ssl.generatingCertificates'));
 
     const sslDir = dirname(keyPath);
     await fs.mkdir(sslDir, { recursive: true, mode: 0o700 });
@@ -34,17 +35,17 @@ export const generateSSLCertificatesIfNeeded = async sslConfig => {
     await fs.chmod(keyPath, 0o600);
     await fs.chmod(certPath, 0o600);
 
-    logger.info('SSL certificates generated successfully');
+    logger.info(t('ssl.certificatesGenerated'));
     return true;
   } catch (error) {
-    logger.error('Failed to generate SSL certificates', { error: error.message });
+    logger.error(t('ssl.generationFailed', { message: error.message }));
     return false;
   }
 };
 
 export const setupHTTPSServer = async (app, sslConfig, port) => {
   if (!sslConfig?.cert || !sslConfig?.key) {
-    logger.info('No SSL configuration found');
+    logger.info(t('ssl.noConfiguration'));
     return null;
   }
 
@@ -58,13 +59,13 @@ export const setupHTTPSServer = async (app, sslConfig, port) => {
     const httpsServer = https.createServer(credentials, app);
 
     httpsServer.listen(port, () => {
-      logger.info(`HTTPS Server running at https://localhost:${port}`);
+      logger.info(t('ssl.serverRunning', { port }));
     });
 
     return httpsServer;
   } catch (error) {
-    logger.error('SSL Certificate Error', { error: error.message });
-    logger.info('HTTPS server not started due to SSL certificate issues');
+    logger.error(t('ssl.certificateError', { message: error.message }));
+    logger.info(t('ssl.serverNotStarted'));
     return null;
   }
 };

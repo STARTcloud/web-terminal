@@ -12,6 +12,7 @@ import {
   getOidcConfiguration,
 } from '../config/passport.js';
 import { revokeUserTokens, trackIssuedToken } from '../middleware/tokenRevocation.js';
+import { t } from '../config/i18n.js';
 
 /**
  * @swagger
@@ -159,11 +160,11 @@ router.get('/auth/methods', (req, res) => {
       user: userInfo,
     });
   } catch (error) {
-    logger.error('Auth methods error', { error: error.message });
+    logger.error(t('logs.authMethodsError'), { error: error.message });
     logAccess(req, 'AUTH_METHODS_ERROR', error.message);
     return res.status(500).json({
       success: false,
-      message: 'Failed to load authentication methods',
+      message: t('auth.authMethodsLoadFailed'),
     });
   }
 });
@@ -209,7 +210,7 @@ router.get('/auth/methods', (req, res) => {
  *               example: auth_token=jwt.token.here; HttpOnly; Secure
  */
 router.get('/auth/oidc/callback', async (req, res) => {
-  logger.info('OIDC callback received', {
+  logger.info(t('logs.oidcCallbackReceived'), {
     sessionId: req.sessionID,
     hasSession: !!req.session,
     sessionKeys: req.session ? Object.keys(req.session) : [],
@@ -220,7 +221,7 @@ router.get('/auth/oidc/callback', async (req, res) => {
   const codeVerifier = req.session?.oidcCodeVerifier;
   const returnUrl = req.session?.oidcReturnUrl || '/';
 
-  logger.info('OIDC callback provider resolution', {
+  logger.info(t('logs.oidcCallbackProviderResolution'), {
     provider,
     hasState: !!state,
     hasCodeVerifier: !!codeVerifier,
@@ -228,7 +229,7 @@ router.get('/auth/oidc/callback', async (req, res) => {
   });
 
   if (!provider || !state || !codeVerifier) {
-    logger.error('Missing OIDC session data during callback');
+    logger.error(t('logs.missingOidcSessionData'));
     return res.redirect('/login?error=oidc_failed');
   }
 
@@ -241,7 +242,7 @@ router.get('/auth/oidc/callback', async (req, res) => {
   }
 
   try {
-    logger.info(`Processing OIDC callback for provider: ${provider}`);
+    logger.info(t('logs.processingOidcCallback', { provider }));
 
     // Create current URL from request
     const serverConfig = configLoader.getServerConfig();
@@ -295,7 +296,7 @@ router.get('/auth/oidc/callback', async (req, res) => {
       maxAge: 24 * 60 * 60 * 1000,
     });
 
-    logger.info('OIDC authentication completed successfully', {
+    logger.info(t('logs.oidcAuthCompleted'), {
       email: user.email,
       provider,
       jti,
@@ -304,7 +305,7 @@ router.get('/auth/oidc/callback', async (req, res) => {
     logAccess(req, 'OIDC_SUCCESS', `user: ${user.email}`);
     return res.redirect(returnUrl);
   } catch (error) {
-    logger.error('OIDC callback authentication error', {
+    logger.error(t('logs.oidcCallbackAuthError'), {
       error: error.message,
       provider,
     });
@@ -348,13 +349,13 @@ router.get('/auth/oidc/:provider', async (req, res) => {
   const { provider } = req.params;
 
   try {
-    logger.info(`Starting OIDC auth with provider: ${provider}`);
+    logger.info(t('logs.startingOidcAuth', { provider }));
     logAccess(req, 'OIDC_START', `provider: ${provider}`);
 
     // Extract return URL from request query parameters
     const returnUrl = req.query.return ? decodeURIComponent(req.query.return) : '/';
 
-    logger.info('OIDC return URL extraction', { queryReturn: req.query.return, returnUrl });
+    logger.info(t('logs.oidcReturnUrlExtraction'), { queryReturn: req.query.return, returnUrl });
 
     // Generate security parameters
     const state = client.randomState();
@@ -366,9 +367,9 @@ router.get('/auth/oidc/:provider', async (req, res) => {
       req.session.oidcState = state;
       req.session.oidcCodeVerifier = codeVerifier;
       req.session.oidcReturnUrl = returnUrl;
-      logger.info(`Stored OIDC session data for provider: ${provider}, returnUrl: ${returnUrl}`);
+      logger.info(t('logs.storedOidcSessionData', { provider, returnUrl }));
     } else {
-      logger.error('No session available to store OIDC data');
+      logger.error(t('logs.noSessionAvailable'));
       return res.redirect('/login?error=oidc_failed');
     }
 
@@ -382,10 +383,10 @@ router.get('/auth/oidc/:provider', async (req, res) => {
 
     const authUrl = await buildAuthorizationUrl(provider, redirectUri, state, codeVerifier);
 
-    logger.info(`Redirecting to authorization URL for provider: ${provider}`);
+    logger.info(t('logs.redirectingToAuthUrl', { provider }));
     return res.redirect(authUrl.toString());
   } catch (error) {
-    logger.error(`Failed to start OIDC auth for provider ${provider}:`, error.message);
+    logger.error(t('logs.failedToStartOidcAuth', { provider, message: error.message }));
     logAccess(req, 'OIDC_START_ERROR', error.message);
     return res.redirect('/login?error=oidc_failed');
   }
@@ -448,7 +449,7 @@ router.get('/auth/status', (req, res) => {
       },
     });
   } catch (error) {
-    logger.error('Auth status check error', { error: error.message });
+    logger.error(t('logs.authStatusCheckError'), { error: error.message });
     return res.json({
       authenticated: false,
       user: null,
@@ -492,7 +493,7 @@ router.post('/auth/logout', (req, res) => {
         userProvider = decoded.provider;
         idToken = decoded.id_token;
       } catch (jwtError) {
-        logger.warn('Failed to decode JWT token during logout', { error: jwtError.message });
+        logger.warn(t('logs.failedToDecodeJwtDuringLogout'), { error: jwtError.message });
       }
     }
 
@@ -519,15 +520,15 @@ router.post('/auth/logout', (req, res) => {
         );
 
         if (endSessionUrl) {
-          logger.info(`Redirecting to OIDC provider logout: ${providerName}`);
+          logger.info(t('logs.redirectingToOidcProviderLogout', { provider: providerName }));
           return res.json({
             success: true,
-            message: 'Logged out successfully',
+            message: t('auth.logoutSuccessful'),
             redirect_url: endSessionUrl.toString(),
           });
         }
       } catch (error) {
-        logger.error(`Failed to build end session URL for provider ${providerName}:`, {
+        logger.error(t('logs.failedToBuildEndSessionUrl', { provider: providerName }), {
           message: error.message,
           stack: error.stack,
           name: error.name,
@@ -539,13 +540,13 @@ router.post('/auth/logout', (req, res) => {
 
     return res.json({
       success: true,
-      message: 'Logged out successfully',
+      message: t('auth.logoutSuccessful'),
     });
   } catch (error) {
-    logger.error('Logout error', { error: error.message });
+    logger.error(t('logs.logoutError'), { error: error.message });
     return res.status(500).json({
       success: false,
-      message: 'Logout failed',
+      message: t('auth.logoutFailed'),
     });
   }
 });
@@ -606,7 +607,7 @@ router.post('/auth/login/basic', (req, res) => {
   if (!username || !password) {
     return res.status(400).json({
       success: false,
-      message: 'Username and password required',
+      message: t('auth.usernamePasswordRequired'),
     });
   }
 
@@ -617,7 +618,7 @@ router.post('/auth/login/basic', (req, res) => {
     logAccess(req, 'BASIC_AUTH_FAILED', `username: ${username}`);
     return res.status(401).json({
       success: false,
-      message: 'Invalid credentials',
+      message: t('auth.invalidCredentials'),
     });
   }
 
@@ -656,7 +657,7 @@ router.post('/auth/login/basic', (req, res) => {
 
   return res.json({
     success: true,
-    message: 'Login successful',
+    message: t('auth.loginSuccessful'),
   });
 });
 
@@ -691,12 +692,12 @@ router.get('/logout', (req, res) => {
         userProvider = decoded.provider;
         idToken = decoded.id_token;
       } catch (jwtError) {
-        logger.warn('Failed to decode JWT token during logout', { error: jwtError.message });
+        logger.warn(t('logs.failedToDecodeJwtDuringLogout'), { error: jwtError.message });
       }
     }
 
     res.clearCookie('auth_token');
-    logAccess(req, 'LOGOUT', 'JWT cookie cleared via GET');
+    logAccess(req, 'LOGOUT', 'JWT cookie cleared');
 
     if (userProvider && userProvider.startsWith('oidc-')) {
       const providerName = userProvider.replace('oidc-', '');
@@ -718,11 +719,11 @@ router.get('/logout', (req, res) => {
         );
 
         if (endSessionUrl) {
-          logger.info(`Redirecting to OIDC provider logout: ${providerName}`);
+          logger.info(t('logs.redirectingToOidcProviderLogout', { provider: providerName }));
           return res.redirect(endSessionUrl.toString());
         }
       } catch (error) {
-        logger.error(`Failed to build end session URL for provider ${providerName}:`, {
+        logger.error(t('logs.failedToBuildEndSessionUrl', { provider: providerName }), {
           message: error.message,
           stack: error.stack,
           name: error.name,
@@ -734,7 +735,7 @@ router.get('/logout', (req, res) => {
 
     return res.redirect('/login');
   } catch (error) {
-    logger.error('Logout error', { error: error.message });
+    logger.error(t('logs.logoutError'), { error: error.message });
     return res.redirect('/login?error=logout_failed');
   }
 });
@@ -761,7 +762,7 @@ router.get('/logout/local', (req, res) => {
     logAccess(req, 'LOCAL_LOGOUT', 'JWT cookie cleared via local logout');
     return res.redirect('/login?logout=success');
   } catch (error) {
-    logger.error('Local logout error', { error: error.message });
+    logger.error(t('logs.localLogoutError'), { error: error.message });
     return res.redirect('/login?error=logout_failed');
   }
 });
@@ -800,13 +801,13 @@ router.post('/auth/logout/local', (req, res) => {
     logAccess(req, 'LOCAL_LOGOUT', 'JWT cookie cleared via local logout POST');
     return res.json({
       success: true,
-      message: 'Logged out locally',
+      message: t('auth.localLogoutSuccessful'),
     });
   } catch (error) {
-    logger.error('Local logout error', { error: error.message });
+    logger.error(t('logs.localLogoutError'), { error: error.message });
     return res.status(500).json({
       success: false,
-      message: 'Local logout failed',
+      message: t('auth.localLogoutFailed'),
     });
   }
 });
@@ -874,7 +875,7 @@ router.post('/auth/logout/backchannel', async (req, res) => {
 
     // Check if backchannel logout is enabled
     if (!authConfig.backchannel_logout?.enabled) {
-      logger.warn('Backchannel logout request received but feature is disabled');
+      logger.warn(t('logs.backchannelLogoutDisabled'));
       return res.status(501).json({
         error: 'unsupported_logout_method',
         error_description: 'Backchannel logout is not enabled',
@@ -925,7 +926,7 @@ router.post('/auth/logout/backchannel', async (req, res) => {
     );
 
     if (!providerEntry) {
-      logger.warn('Backchannel logout from unknown provider', { iss });
+      logger.warn(t('logs.backchannelLogoutUnknownProvider'), { iss });
       return res.status(400).json({
         error: 'invalid_request',
         error_description: 'Unknown issuer',
@@ -938,7 +939,7 @@ router.post('/auth/logout/backchannel', async (req, res) => {
     const oidcConfig = getOidcConfiguration(providerName);
 
     if (!oidcConfig) {
-      logger.error('OIDC configuration not found for provider', { providerName });
+      logger.error(t('logs.oidcConfigNotFound'), { providerName });
       return res.status(400).json({
         error: 'invalid_request',
         error_description: 'Provider configuration not available',
@@ -955,13 +956,13 @@ router.post('/auth/logout/backchannel', async (req, res) => {
         audience: providerEntry[1].client_id,
       });
 
-      logger.info('Logout token validated successfully', {
+      logger.info(t('logs.logoutTokenValidated'), {
         provider: providerName,
         sub: payload.sub,
         sid: payload.sid,
       });
     } catch (error) {
-      logger.error('Logout token validation failed', {
+      logger.error(t('logs.logoutTokenValidationFailed'), {
         provider: providerName,
         error: error.message,
       });
@@ -974,7 +975,7 @@ router.post('/auth/logout/backchannel', async (req, res) => {
     // Revoke tokens based on configuration (sid, sub, or both)
     await revokeUserTokens(sub, sid, 'backchannel_logout');
 
-    logger.info('Backchannel logout processed successfully', {
+    logger.info(t('logs.backchannelLogoutProcessed'), {
       provider: providerName,
       sub,
       sid,
@@ -990,7 +991,7 @@ router.post('/auth/logout/backchannel', async (req, res) => {
       success: true,
     });
   } catch (error) {
-    logger.error('Backchannel logout error', { error: error.message, stack: error.stack });
+    logger.error(t('logs.backchannelLogoutError'), { error: error.message, stack: error.stack });
     return res.status(400).json({
       error: 'invalid_request',
       error_description: 'Failed to process logout_token',

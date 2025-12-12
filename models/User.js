@@ -1,4 +1,5 @@
 import { DataTypes } from 'sequelize';
+import { t } from '../config/i18n.js';
 
 let User = null;
 
@@ -21,7 +22,7 @@ export const initializeUserModel = sequelize => {
             if (value.includes('@') || value.startsWith('CN=')) {
               return true;
             }
-            throw new Error('Must be an email address or Distinguished Name');
+            throw new Error(t('validation.emailOrDnRequired'));
           },
         },
       },
