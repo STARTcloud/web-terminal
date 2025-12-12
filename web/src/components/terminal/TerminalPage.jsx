@@ -128,6 +128,7 @@ const TerminalPage = () => {
       }
       websocket.removeEventListener("open", onOpen);
       websocket.removeEventListener("close", onClose);
+      return undefined;  // Explicit void return
     };
   }, [instance, session]);
 
