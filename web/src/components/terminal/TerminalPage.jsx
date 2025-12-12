@@ -123,9 +123,7 @@ const TerminalPage = () => {
     websocket.addEventListener("close", onClose);
 
     return () => {
-      if (cleanup) {
-        void cleanup();
-      }
+      cleanup?.();  // Optional chaining - no return leak
       websocket.removeEventListener("open", onOpen);
       websocket.removeEventListener("close", onClose);
     };
