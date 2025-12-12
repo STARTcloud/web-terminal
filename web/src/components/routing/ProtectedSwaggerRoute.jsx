@@ -5,7 +5,7 @@ import Layout from "../layout/Layout";
 
 const SwaggerPlaceholder = () => {
   const { t } = useTranslation(["common"]);
-  
+
   return (
     <div className="container py-5">
       <h1>{t("common:swagger.title")}</h1>

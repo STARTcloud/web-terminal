@@ -2,8 +2,8 @@ import { AttachAddon } from "@xterm/addon-attach";
 import { FitAddon } from "@xterm/addon-fit";
 import { WebLinksAddon } from "@xterm/addon-web-links";
 import { useEffect, useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import { useXTerm } from "react-xtermjs";
 
 import { useTerminal } from "../../contexts/TerminalContext";

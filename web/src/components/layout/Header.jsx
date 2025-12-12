@@ -23,9 +23,10 @@ const Header = () => {
   const getLanguageDisplayName = (languageCode) => {
     const translationKey = `languageNames.${languageCode}`;
     const translated = t(translationKey);
-    
+
     // If translation doesn't exist, fall back to uppercase code
-    return translated !== translationKey ? translated : languageCode.toUpperCase();
+    return translated !== translationKey ?
+          translated : languageCode.toUpperCase();
   };
 
   // Get supported languages from i18n
