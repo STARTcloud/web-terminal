@@ -334,7 +334,7 @@ router.get('/auth/oidc/callback', async (req, res) => {
  *         schema:
  *           type: string
  *         description: URL to redirect to after successful authentication
- *         example: /files/uploads
+ *         example: /terminal
  *     responses:
  *       302:
  *         description: Redirect to OIDC provider authorization endpoint

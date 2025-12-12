@@ -183,7 +183,7 @@ jobs:
           # Create or update draft release for development version
           RELEASE_TAG="v${VERSION}-dev"
           RELEASE_TITLE="Development Release ${VERSION}"
-          RELEASE_NOTES="🚧 **Development Release** 🚧
+          RELEASE_NOTES="🚧 **Development Release** 🚧"
 
           This is an automated development build from the main branch.
 

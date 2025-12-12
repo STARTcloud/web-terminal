@@ -1,6 +1,6 @@
 /**
  * Web-Terminal PWA Service Worker
- * Provides offline support, caching, and background sync for the file server
+ * Provides offline support and caching for the terminal application
  * I am not sure why this is hardcoded to a version, it absolutley should not be
  */
 
@@ -17,10 +17,9 @@ const STATIC_RESOURCES = [
   "/manifest.json",
 ];
 
-// API patterns to cache
+// API patterns to cache (minimal for terminal app)
 const API_PATTERNS = [
-  /^\/api\/files\/list/, // Directory listings
-  /^\/api\/user-api-keys/, // User API keys
+  /^\/api\/terminal\/sessions/, // Terminal sessions
 ];
 
 // Install event - cache static resources

@@ -1,10 +1,20 @@
 import express from 'express';
+import { rateLimit } from 'express-rate-limit';
 import configLoader from '../config/configLoader.js';
 import { sseLogger as logger } from '../config/logger.js';
 import { requireAuthentication } from '../middleware/auth.middleware.js';
 import { t } from '../config/i18n.js';
 
 const router = express.Router();
+
+// Rate limiter for SSE endpoint to prevent DoS attacks
+const sseLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10, // Limit each IP to 10 SSE connections per window
+  message: t('rateLimit.sseConnectionsExceeded'),
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 
 // Track connected clients (from DigitalOcean article)
 let clients = [];
@@ -14,10 +24,9 @@ let clients = [];
  * /api/events:
  *   get:
  *     summary: Server-Sent Events stream
- *     description: Establishes a Server-Sent Events connection for real-time updates about file operations (checksum updates, file deletions, additions, renames, folder creation)
+ *     description: Establishes a Server-Sent Events connection for real-time system updates (legacy endpoint, may not be actively used in terminal application)
  *     tags: [Events]
  *     security:
- *       - ApiKeyAuth: []
  *       - JwtAuth: []
  *     responses:
  *       200:
@@ -26,22 +35,9 @@ let clients = [];
  *           text/event-stream:
  *             schema:
  *               type: string
- *               description: Server-Sent Events stream with real-time file operation updates
+ *               description: Server-Sent Events stream for real-time updates
  *               example: |
- *                 event: checksum-update
- *                 data: {"type":"checksum_complete","filePath":"/uploads/file.txt","checksum":"abc123...","timestamp":"2025-09-29T14:30:00.000Z"}
- *
- *                 event: file-deleted
- *                 data: {"type":"file_deleted","filePath":"/uploads/old.txt","isDirectory":false,"timestamp":"2025-09-29T14:31:00.000Z"}
- *
- *                 event: file-added
- *                 data: {"type":"file_added","filePath":"/uploads/new.txt","size":1024,"timestamp":"2025-09-29T14:32:00.000Z"}
- *
- *                 event: file-renamed
- *                 data: {"type":"file_renamed","oldPath":"/uploads/old.txt","newPath":"/uploads/new.txt","isDirectory":false,"timestamp":"2025-09-29T14:33:00.000Z"}
- *
- *                 event: folder-created
- *                 data: {"type":"folder_created","folderPath":"/uploads/new-folder","timestamp":"2025-09-29T14:34:00.000Z"}
+ *                 data: []
  *         headers:
  *           Content-Type:
  *             schema:
@@ -62,7 +58,7 @@ let clients = [];
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.get('/', requireAuthentication, (req, res) => {
+router.get('/', sseLimiter, requireAuthentication, (req, res) => {
   // Set max listeners based on configuration to prevent false memory leak warnings
   const serverConfig = configLoader.getServerConfig();
   const maxConnections = serverConfig.sse_max_connections || 1000;

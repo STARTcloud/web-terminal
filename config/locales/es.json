@@ -86,7 +86,8 @@
     "httpServerRunning": "Servidor HTTP ejecutรกndose en http://localhost:{{port}}"
   },
   "rateLimit": {
-    "exceeded": "Lรญmite de velocidad excedido"
+    "exceeded": "Límite de velocidad excedido",
+    "sseConnectionsExceeded": "Demasiadas conexiones SSE desde esta IP, por favor intente más tarde."
   },
   "websocket": {
     "upgradeRejected": "Actualizaciรณn WebSocket rechazada: URL no coincide con patrรณn de terminal",

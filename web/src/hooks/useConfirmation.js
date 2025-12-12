@@ -2,7 +2,7 @@ import { useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
 const useConfirmation = () => {
-  const { t } = useTranslation(["files", "common"]);
+  const { t } = useTranslation(["common"]);
   const [showConfirm, setShowConfirm] = useState(false);
   const [confirmAction, setConfirmAction] = useState(null);
 
@@ -12,7 +12,7 @@ const useConfirmation = () => {
         setConfirmAction({
           resolve,
           message,
-          title: t("files:operations.delete"),
+          title: t("common:buttons.delete"),
           confirmText: t("common:buttons.delete"),
           variant: "danger",
         });
@@ -21,14 +21,14 @@ const useConfirmation = () => {
     [t]
   );
 
-  const confirmMove = useCallback(
-    (message) =>
+  const confirmGeneric = useCallback(
+    (message, title) =>
       new Promise((resolve) => {
         setConfirmAction({
           resolve,
           message,
-          title: t("files:operations.move"),
-          confirmText: t("common:buttons.move"),
+          title: title || t("common:messages.confirmAction"),
+          confirmText: t("common:buttons.confirm"),
           variant: "primary",
         });
         setShowConfirm(true);
@@ -56,7 +56,7 @@ const useConfirmation = () => {
     showConfirm,
     confirmAction,
     confirmDelete,
-    confirmMove,
+    confirmGeneric,
     handleConfirm,
     handleCancel,
   };

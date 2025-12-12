@@ -145,6 +145,68 @@ const cleanupInactiveSessions = async () => {
 
 setInterval(cleanupInactiveSessions, 10 * 60 * 1000);
 
+/**
+ * @swagger
+ * /api/terminal/start:
+ *   post:
+ *     summary: Start a new terminal session
+ *     description: Creates a new terminal session with PTY process or reuses existing active session
+ *     tags: [Terminal]
+ *     security:
+ *       - JwtAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - terminal_cookie
+ *             properties:
+ *               terminal_cookie:
+ *                 type: string
+ *                 description: Unique identifier for the terminal session
+ *                 example: "session-12345"
+ *     responses:
+ *       200:
+ *         description: Terminal session started or reused successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       description: Session identifier
+ *                     websocket_url:
+ *                       type: string
+ *                       description: WebSocket URL for terminal I/O
+ *                       example: "/ws/terminal/1"
+ *                     reused:
+ *                       type: boolean
+ *                       description: Whether existing session was reused
+ *                     created_at:
+ *                       type: string
+ *                       format: date-time
+ *                     buffer:
+ *                       type: string
+ *                       description: Terminal buffer content
+ *                     status:
+ *                       type: string
+ *                       enum: [connecting, active]
+ *       400:
+ *         description: Missing terminal_cookie parameter
+ *       401:
+ *         description: Authentication required
+ *       500:
+ *         description: Failed to start terminal session
+ */
 router.post('/start', requireAuthentication, async (req, res) => {
   try {
     const { terminal_cookie } = req.body;
@@ -255,6 +317,45 @@ router.post('/start', requireAuthentication, async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/terminal/sessions:
+ *   get:
+ *     summary: List all terminal sessions
+ *     description: Retrieve all terminal sessions for the authenticated user
+ *     tags: [Terminal]
+ *     security:
+ *       - JwtAuth: []
+ *     responses:
+ *       200:
+ *         description: List of terminal sessions
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: integer
+ *                   terminal_cookie:
+ *                     type: string
+ *                   pid:
+ *                     type: integer
+ *                   status:
+ *                     type: string
+ *                     enum: [connecting, active, closed, failed]
+ *                   created_at:
+ *                     type: string
+ *                     format: date-time
+ *                   last_activity:
+ *                     type: string
+ *                     format: date-time
+ *       401:
+ *         description: Authentication required
+ *       500:
+ *         description: Failed to list sessions
+ */
 router.get('/sessions', requireAuthentication, async (req, res) => {
   try {
     logger.debug(t('logs.listingTerminalSessions'), {
@@ -273,6 +374,41 @@ router.get('/sessions', requireAuthentication, async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/terminal/sessions/{sessionId}/stop:
+ *   delete:
+ *     summary: Stop a terminal session
+ *     description: Terminates an active terminal session by killing the PTY process
+ *     tags: [Terminal]
+ *     security:
+ *       - JwtAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: sessionId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Terminal session ID
+ *     responses:
+ *       200:
+ *         description: Session stopped successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: "Terminal session stopped"
+ *       401:
+ *         description: Authentication required
+ *       500:
+ *         description: Failed to stop session
+ */
 router.delete('/sessions/:sessionId/stop', requireAuthentication, async (req, res) => {
   try {
     const { sessionId } = req.params;

@@ -44,33 +44,15 @@
     "failed": "Fallido"
   },
   "actions": {
-    "copyToClipboard": "Copiar al portapapeles",
-    "copyFullChecksum": "Copiar suma de verificación completa",
-    "backToFiles": "Volver a Archivos",
-    "clearSelection": "Limpiar selección",
-    "selectAll": "Seleccionar Todo",
-    "retryUpload": "Reintentar subida",
-    "showUploadSection": "Mostrar Sección de Subida",
-    "hideUploadSection": "Ocultar Sección de Subida",
-    "installApp": "Instalar {{appName}} como aplicación",
-    "clearSelectionTooltip": "Limpiar selección",
-    "deleteSelectedTooltip": "Eliminar {{count}} archivos seleccionados"
+    "installApp": "Instalar {{appName}} como aplicación"
   },
   "messages": {
-    "noResultsFound": "No se Encontraron Resultados",
-    "searchFailed": "Búsqueda Fallida",
-    "uploadFailed": "Subida fallida",
-    "deleteFailed": "Eliminación fallida",
     "operationSuccessful": "Operación completada exitosamente",
     "operationFailed": "Operación fallida",
     "confirmAction": "¿Estás seguro?",
-    "cannotUndoAction": "Esta acción no se puede deshacer.",
-    "confirmActionFallback": "Confirmar Acción",
-    "areYouSureFallback": "¿Estás seguro?",
-    "confirmFallback": "Confirmar"
+    "cannotUndoAction": "Esta acción no se puede deshacer."
   },
   "landing": {
-    "clickToAccessFiles": "Haz clic para acceder al índice de archivos",
     "authenticationRequired": "El acceso a los recursos requiere autenticación adecuada",
     "contactSupport": "Contactar Soporte"
   },
@@ -85,9 +67,8 @@
     "installApp": "Instalar Aplicación",
     "installWebTerminalAsApp": "Instalar {{appName}} como aplicación",
     "offline": "Sin Conexión",
-    "uploadsQueuedForSync": "{{count}} subidas en cola para sincronizar",
     "offlineMode": "Modo Sin Conexión",
-    "youreOfflineMessage": "Estás sin conexión. Algunas funciones pueden estar limitadas. Las subidas se pondrán en cola para cuando vuelvas a estar en línea.",
+    "youreOfflineMessage": "Estás sin conexión. Algunas funciones pueden estar limitadas.",
     "updateAvailable": "Actualización Disponible",
     "newVersionAvailable": "Una nueva versión de {{appName}} está disponible.",
     "refresh": "Actualizar"

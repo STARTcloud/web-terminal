@@ -44,33 +44,15 @@
     "failed": "Failed"
   },
   "actions": {
-    "copyToClipboard": "Copy to clipboard",
-    "copyFullChecksum": "Copy full checksum",
-    "backToFiles": "Back to Files",
-    "clearSelection": "Clear selection",
-    "selectAll": "Select All",
-    "retryUpload": "Retry upload",
-    "showUploadSection": "Show Upload Section",
-    "hideUploadSection": "Hide Upload Section",
-    "installApp": "Install {{appName}} as an app",
-    "clearSelectionTooltip": "Clear selection",
-    "deleteSelectedTooltip": "Delete {{count}} selected files"
+    "installApp": "Install {{appName}} as an app"
   },
   "messages": {
-    "noResultsFound": "No Results Found",
-    "searchFailed": "Search Failed",
-    "uploadFailed": "Upload failed",
-    "deleteFailed": "Delete failed",
     "operationSuccessful": "Operation completed successfully",
     "operationFailed": "Operation failed",
     "confirmAction": "Are you sure?",
-    "cannotUndoAction": "This action cannot be undone.",
-    "confirmActionFallback": "Confirm Action",
-    "areYouSureFallback": "Are you sure?",
-    "confirmFallback": "Confirm"
+    "cannotUndoAction": "This action cannot be undone."
   },
   "landing": {
-    "clickToAccessFiles": "Click to access file index",
     "authenticationRequired": "Access to resources requires proper authentication",
     "contactSupport": "Contact Support"
   },
@@ -85,9 +67,8 @@
     "installApp": "Install App",
     "installWebTerminalAsApp": "Install {{appName}} as an app",
     "offline": "Offline",
-    "uploadsQueuedForSync": "{{count}} uploads queued for sync",
     "offlineMode": "Offline Mode",
-    "youreOfflineMessage": "You're offline. Some features may be limited. Uploads will be queued for when you're back online.",
+    "youreOfflineMessage": "You're offline. Some features may be limited.",
     "updateAvailable": "Update Available",
     "newVersionAvailable": "A new version of {{appName}} is available.",
     "refresh": "Refresh"

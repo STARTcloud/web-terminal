@@ -86,7 +86,8 @@
     "httpServerRunning": "HTTP Server running at http://localhost:{{port}}"
   },
   "rateLimit": {
-    "exceeded": "Rate limit exceeded"
+    "exceeded": "Rate limit exceeded",
+    "sseConnectionsExceeded": "Too many SSE connections from this IP, please try again later."
   },
   "websocket": {
     "upgradeRejected": "WebSocket upgrade rejected: URL does not match terminal pattern",
