@@ -25,8 +25,9 @@ const Header = () => {
     const translated = t(translationKey);
 
     // If translation doesn't exist, fall back to uppercase code
-    return translated !== translationKey ?
-          translated : languageCode.toUpperCase();
+    return translated !== translationKey
+      ? translated
+      : languageCode.toUpperCase();
   };
 
   // Get supported languages from i18n
