@@ -14,6 +14,7 @@ const TerminalPage = () => {
   const navigate = useNavigate();
   const { instance, ref } = useXTerm();
   const addonsRef = useRef(null);
+  const attachAddonRef = useRef(null);
   const [isReady, setIsReady] = useState(false);
 
   // Initialize addons only once
@@ -79,6 +80,7 @@ const TerminalPage = () => {
       if (websocket.readyState === WebSocket.OPEN) {
         try {
           const attachAddon = new AttachAddon(websocket);
+          attachAddonRef.current = attachAddon;
           instance.loadAddon(attachAddon);
           setIsReady(true);
           console.log("Terminal attached to WebSocket");
@@ -94,21 +96,14 @@ const TerminalPage = () => {
               console.log("Sent initial resize to backend:", { cols, rows });
             }
           }, 100);
-
-          return () => {
-            attachAddon?.dispose();
-            setIsReady(false);
-          };
         } catch (error) {
           console.error("Failed to attach WebSocket:", error);
-          return undefined;
         }
       }
-      return undefined;
     };
 
     // Attach immediately if already open
-    const cleanup = attachWhenReady();
+    attachWhenReady();
 
     // Listen for websocket events
     const onOpen = () => {
@@ -123,7 +118,11 @@ const TerminalPage = () => {
     websocket.addEventListener("close", onClose);
 
     return () => {
-      cleanup?.();  // Optional chaining - no return leak
+      if (attachAddonRef.current) {
+        attachAddonRef.current.dispose();
+        attachAddonRef.current = null;
+        setIsReady(false);
+      }
       websocket.removeEventListener("open", onOpen);
       websocket.removeEventListener("close", onClose);
     };
