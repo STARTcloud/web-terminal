@@ -127,52 +127,52 @@ jobs:
         run: |
           dpkg-deb --build "${PACKAGE_NAME}_${VERSION}_${ARCH}" "${PACKAGE_NAME}_${VERSION}_${ARCH}.deb"
 
-      # OmniOS Build Steps
-      - name: Fresh checkout for OmniOS build
-        uses: actions/checkout@v6
-        with:
-          path: omnios-source
-          clean: true
-
-      - name: Clean OmniOS build directory
-        run: |
-          ssh ghrunner@omnios.packages.startcloud.com "rm -rf /local/builds/web-terminal-dev/* /local/builds/web-terminal-dev/.*" || true
-
-      - name: Sync source code to OmniOS
-        run: |
-          rsync -av \
-            --exclude='.git' \
-            --exclude='node_modules' \
-            --exclude='web/node_modules' \
-            --exclude='web/dist' \
-            --exclude='*.deb' \
-            omnios-source/ ghrunner@omnios.packages.startcloud.com:/local/builds/web-terminal-dev/
-
-      - name: Build package on OmniOS
-        run: |
-          ssh ghrunner@omnios.packages.startcloud.com "
-            cd /local/builds/web-terminal-dev && 
-            export PATH=/opt/ooce/bin:/opt/ooce/node-22/bin:\$PATH &&
-            export MAKE=gmake &&
-            export DEV_VERSION=${VERSION} &&
-            chmod +x packaging/omnios/build.sh &&
-            ./packaging/omnios/build.sh
-          "
-
-      - name: Transfer OmniOS package back
-        run: |
-          rsync -av ghrunner@omnios.packages.startcloud.com:/local/builds/web-terminal-dev/*.p5p ./ || echo "No .p5p files found"
-
-      - name: Upload Debian package to repository server
-        run: |
-          rsync -av ${PACKAGE_NAME}_*.deb startcloud@172.17.204.177:/tmp/
-
-      - name: Add package to repository pool
-        run: |
-          ssh startcloud@172.17.204.177 "
-            mkdir -p /local/public/debian/pool/main/z/web-terminal-dev
-            cp /tmp/${PACKAGE_NAME}_*.deb /local/public/debian/pool/main/z/web-terminal-dev/
-          "
+#      # OmniOS Build Steps
+#      - name: Fresh checkout for OmniOS build
+#        uses: actions/checkout@v6
+#        with:
+#          path: omnios-source
+#          clean: true
+#
+#      - name: Clean OmniOS build directory
+#        run: |
+#          ssh ghrunner@omnios.packages.startcloud.com "rm -rf /local/builds/web-terminal-dev/* /local/builds/web-terminal-dev/.*" || true
+#
+#      - name: Sync source code to OmniOS
+#        run: |
+#          rsync -av \
+#            --exclude='.git' \
+#            --exclude='node_modules' \
+#            --exclude='web/node_modules' \
+#            --exclude='web/dist' \
+#            --exclude='*.deb' \
+#            omnios-source/ ghrunner@omnios.packages.startcloud.com:/local/builds/web-terminal-dev/
+#
+#      - name: Build package on OmniOS
+#        run: |
+#          ssh ghrunner@omnios.packages.startcloud.com "
+#            cd /local/builds/web-terminal-dev && 
+#            export PATH=/opt/ooce/bin:/opt/ooce/node-22/bin:\$PATH &&
+#            export MAKE=gmake &&
+#            export DEV_VERSION=${VERSION} &&
+#            chmod +x packaging/omnios/build.sh &&
+#            ./packaging/omnios/build.sh
+#          "
+#
+#      - name: Transfer OmniOS package back
+#        run: |
+#          rsync -av ghrunner@omnios.packages.startcloud.com:/local/builds/web-terminal-dev/*.p5p ./ || echo "No .p5p files found"
+#
+#      - name: Upload Debian package to repository server
+#        run: |
+#          rsync -av ${PACKAGE_NAME}_*.deb startcloud@172.17.204.177:/tmp/
+#
+#      - name: Add package to repository pool
+#        run: |
+#          ssh startcloud@172.17.204.177 "
+#            mkdir -p /local/public/debian/pool/main/z/web-terminal-dev
+#            cp /tmp/${PACKAGE_NAME}_*.deb /local/public/debian/pool/main/z/web-terminal-dev/
+#          "
 
       - name: Update repository Packages files for all suites
         run: |
@@ -223,14 +223,14 @@ jobs:
             done
           "
 
-      - name: Publish OmniOS package to repository
-        run: |
-          ssh ghrunner@omnios.packages.startcloud.com "
-            cd /local/builds/web-terminal-dev &&
-            pfexec pkgsend publish -d proto -s file:///local/public/r151054/pkg web-terminal.p5m.final &&
-            pfexec pkgrepo refresh -s /local/public/r151054/pkg &&
-            pfexec svcadm restart pkg/server:r151054_STARTcloud
-          "
+#      - name: Publish OmniOS package to repository
+#        run: |
+#          ssh ghrunner@omnios.packages.startcloud.com "
+#            cd /local/builds/web-terminal-dev &&
+#            pfexec pkgsend publish -d proto -s file:///local/public/r151054/pkg web-terminal.p5m.final &&
+#            pfexec pkgrepo refresh -s /local/public/r151054/pkg &&
+#            pfexec svcadm restart pkg/server:r151054_STARTcloud
+#          "
 
       - name: Create development draft release
         env:
@@ -251,7 +251,7 @@ jobs:
 
           ## Packages
           - \`web-terminal-dev_${VERSION}_amd64.deb\` - Debian package
-          - \`web-terminal-dev-${VERSION}.p5p\` - OmniOS package"
+          #- \`web-terminal-dev-${VERSION}.p5p\` - OmniOS package"
 
           # Delete existing dev release if it exists
           gh release delete "$RELEASE_TAG" --yes || true
@@ -268,13 +268,13 @@ jobs:
           # Upload Debian package
           gh release upload "$RELEASE_TAG" "${PACKAGE_NAME}_${VERSION}_${ARCH}.deb" --clobber
 
-          # Upload OmniOS package if it exists
-          for file in *.p5p; do
-            if [ -f "$file" ]; then
-              echo "Uploading $file to draft release..."
-              gh release upload "$RELEASE_TAG" "$file" --clobber
-            fi
-          done
+          ## Upload OmniOS package if it exists
+          #for file in *.p5p; do
+          #  if [ -f "$file" ]; then
+          #    echo "Uploading $file to draft release..."
+          #    gh release upload "$RELEASE_TAG" "$file" --clobber
+          #  fi
+          #done
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v5
@@ -282,12 +282,12 @@ jobs:
           name: 'development-packages'
           path: |
             *.deb
-            *.p5p
+          #  *.p5p
           retention-days: 30
 
       - name: Clean up
         run: |
-          ssh ghrunner@omnios.packages.startcloud.com "rm -rf /local/builds/web-terminal-dev/*"
+          #ssh ghrunner@omnios.packages.startcloud.com "rm -rf /local/builds/web-terminal-dev/*"
           ssh startcloud@172.17.204.177 "rm -f /tmp/${PACKAGE_NAME}_*.deb"
 
       - name: Summary
