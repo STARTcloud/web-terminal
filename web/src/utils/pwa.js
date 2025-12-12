@@ -13,46 +13,6 @@ const showOfflineReadyNotification = () => {
   console.log("[PWA] App ready for offline use");
 };
 
-// IndexedDB helpers (defined first)
-const openIndexedDB = () =>
-  new Promise((resolve, reject) => {
-    const request = indexedDB.open("WebTerminalUploadQueue", 1);
-
-    request.onerror = () => reject(request.error);
-    request.onsuccess = () => resolve(request.result);
-
-    request.onupgradeneeded = (event) => {
-      const db = event.target.result;
-      if (!db.objectStoreNames.contains("uploads")) {
-        const store = db.createObjectStore("uploads", {
-          keyPath: "id",
-          autoIncrement: true,
-        });
-        store.createIndex("timestamp", "timestamp", { unique: false });
-      }
-    };
-  });
-
-const addToUploadQueue = (db, uploadData) =>
-  new Promise((resolve, reject) => {
-    const transaction = db.transaction(["uploads"], "readwrite");
-    const store = transaction.objectStore("uploads");
-    const request = store.add(uploadData);
-
-    request.onerror = () => reject(request.error);
-    request.onsuccess = () => resolve(request.result);
-  });
-
-const getUploadQueueCount = (db) =>
-  new Promise((resolve, reject) => {
-    const transaction = db.transaction(["uploads"], "readonly");
-    const store = transaction.objectStore("uploads");
-    const request = store.count();
-
-    request.onerror = () => reject(request.error);
-    request.onsuccess = () => resolve(request.result);
-  });
-
 /**
  * Register the service worker for PWA functionality
  * @returns {Promise<ServiceWorkerRegistration|null>} Service worker registration or null if not supported

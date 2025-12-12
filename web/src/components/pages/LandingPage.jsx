@@ -43,7 +43,6 @@ const getStyles = (primaryColor) => ({
 
 const LandingPage = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
   const { t } = useTranslation(["common", "auth"]);
   const [config, setConfig] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -128,6 +127,13 @@ const LandingPage = () => {
               cursor: "pointer",
             }}
             onClick={() => navigate("/terminal")}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                navigate("/terminal");
+              }
+            }}
+            role="button"
+            tabIndex={0}
             title="Open Terminal"
           >
             {iconUrl ? (

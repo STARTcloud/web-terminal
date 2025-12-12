@@ -1,9 +1,9 @@
-import { useEffect, useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
-import { useXTerm } from "react-xtermjs";
 import { AttachAddon } from "@xterm/addon-attach";
 import { FitAddon } from "@xterm/addon-fit";
 import { WebLinksAddon } from "@xterm/addon-web-links";
+import { useEffect, useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import { useXTerm } from "react-xtermjs";
 
 import { useAuth } from "../auth/AuthContext";
 import { useTerminal } from "../../contexts/TerminalContext";
@@ -40,7 +40,7 @@ const TerminalPage = () => {
         console.error("Failed to attach terminal to DOM:", error);
       }
     }
-  }, [instance, ref?.current]);
+  }, [instance, ref]);
 
   // Load basic addons and set up resize handler
   useEffect(() => {
@@ -87,10 +87,9 @@ const TerminalPage = () => {
           setTimeout(() => {
             if (addonsRef.current?.fitAddon) {
               addonsRef.current.fitAddon.fit();
-              
+
               // Explicitly send resize after fit() completes
-              const cols = instance.cols;
-              const rows = instance.rows;
+              const { cols, rows } = instance;
               websocket.send(JSON.stringify({ type: "resize", cols, rows }));
               console.log("Sent initial resize to backend:", { cols, rows });
             }
@@ -102,8 +101,10 @@ const TerminalPage = () => {
           };
         } catch (error) {
           console.error("Failed to attach WebSocket:", error);
+          return undefined;
         }
       }
+      return undefined;
     };
 
     // Attach immediately if already open
@@ -122,11 +123,13 @@ const TerminalPage = () => {
     websocket.addEventListener("close", onClose);
 
     return () => {
-      cleanup?.();
+      if (cleanup) {
+        cleanup();
+      }
       websocket.removeEventListener("open", onOpen);
       websocket.removeEventListener("close", onClose);
     };
-  }, [instance, session?.websocket]);
+  }, [instance, session]);
 
   // Handle window resize
   useEffect(() => {
@@ -168,7 +171,7 @@ const TerminalPage = () => {
       >
         <span style={{ color: "#fff", fontSize: "0.9rem" }}>
           Web Terminal - {user.email || user.username}
-          {!isReady && " (connecting...)"}
+          {!isReady ? " (connecting...)" : ""}
         </span>
         <div style={{ display: "flex", gap: "0.5rem" }}>
           <button

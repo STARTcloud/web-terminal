@@ -29,7 +29,9 @@ const Breadcrumbs = () => {
     const viewIndex = searchParams.get("view") === "index";
 
     if (!pathname || pathname === "/") {
-      const breadcrumbs = [{ name: t("common:breadcrumbs.web-terminal"), path: "/" }];
+      const breadcrumbs = [
+        { name: t("common:breadcrumbs.web-terminal"), path: "/" },
+      ];
       if (viewIndex) {
         breadcrumbs.push({
           name: t("common:breadcrumbs.home"),
@@ -41,7 +43,9 @@ const Breadcrumbs = () => {
     }
 
     const parts = pathname.split("/").filter(Boolean);
-    const breadcrumbs = [{ name: t("common:breadcrumbs.web-terminal"), path: "/" }];
+    const breadcrumbs = [
+      { name: t("common:breadcrumbs.web-terminal"), path: "/" },
+    ];
 
     let currentPath = "";
     parts.forEach((part) => {

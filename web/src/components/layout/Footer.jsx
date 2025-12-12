@@ -84,7 +84,9 @@ const Footer = () => {
               size="sm"
               onClick={handleInstallClick}
               className="ms-3"
-              title={t("common:actions.installApp", { appName: "Web-Terminal" })}
+              title={t("common:actions.installApp", {
+                appName: "Web-Terminal",
+              })}
             >
               <i className="bi bi-download" />
             </Button>

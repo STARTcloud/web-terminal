@@ -117,9 +117,7 @@ const LoginPage = () => {
   }
 
   const title = authMethods?.ui?.login_title || "Web-Terminal";
-  const subtitle =
-    authMethods?.ui?.login_subtitle ||
-    "Web-Terminal Login";
+  const subtitle = authMethods?.ui?.login_subtitle || "Web-Terminal Login";
   const primaryColor = authMethods?.ui?.login_primary_color || "#198754";
 
   const oidcMethods = authMethods.success

@@ -1,12 +1,6 @@
 import axios from "axios";
-import {
-  createContext,
-  useContext,
-  useCallback,
-  useRef,
-  useState,
-  useEffect,
-} from "react";
+import PropTypes from "prop-types";
+import { createContext, useContext, useCallback, useRef, useState } from "react";
 
 const TerminalContext = createContext();
 
@@ -118,4 +112,8 @@ export const TerminalProvider = ({ children }) => {
       {children}
     </TerminalContext.Provider>
   );
+};
+
+TerminalProvider.propTypes = {
+  children: PropTypes.node.isRequired,
 };

@@ -12,7 +12,6 @@ import {
   showInstallPrompt,
   isOnline,
   addOnlineOfflineListeners,
-  getQueuedUploadCount,
 } from "../../utils/pwa";
 
 /**
@@ -25,7 +24,6 @@ const PWAStatus = () => {
   const [isAppOnline, setIsAppOnline] = useState(isOnline());
   const [showOfflineToast, setShowOfflineToast] = useState(false);
   const [showUpdateToast, setShowUpdateToast] = useState(false);
-  const [queuedUploads, setQueuedUploads] = useState(0);
   const [isInstalled, setIsInstalled] = useState(isStandalone());
 
   useEffect(() => {
@@ -59,20 +57,10 @@ const PWAStatus = () => {
       }
     );
 
-    // Check queued uploads periodically
-    const checkQueue = async () => {
-      const count = await getQueuedUploadCount();
-      setQueuedUploads(count);
-    };
-
     checkInstallPrompt();
-    checkQueue();
-
-    const queueInterval = setInterval(checkQueue, 30000); // Check every 30 seconds should be configurable via config.yaml
 
     return () => {
       removeListeners();
-      clearInterval(queueInterval);
     };
   }, [isInstalled]);
 
@@ -93,7 +81,9 @@ const PWAStatus = () => {
           size="sm"
           onClick={handleInstallClick}
           className="me-2"
-          title={t("common:pwa.installWebTerminalAsApp", { appName: "Web-Terminal" })}
+          title={t("common:pwa.installWebTerminalAsApp", {
+            appName: "Web-Terminal",
+          })}
         >
           <i className="bi bi-download" /> {t("common:pwa.installApp")}
         </Button>
@@ -106,15 +96,6 @@ const PWAStatus = () => {
         </span>
       ) : null}
 
-      {/* Queued Uploads Indicator */}
-      {queuedUploads > 0 ? (
-        <span
-          className="badge bg-info me-2"
-          title={t("common:pwa.uploadsQueuedForSync", { count: queuedUploads })}
-        >
-          <i className="bi bi-cloud-upload" /> {queuedUploads}
-        </span>
-      ) : null}
 
       {/* Toast Notifications */}
       <ToastContainer position="top-end" className="p-3">
