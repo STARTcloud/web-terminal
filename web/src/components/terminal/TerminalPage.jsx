@@ -71,7 +71,7 @@ const TerminalPage = () => {
   useEffect(() => {
     if (!instance || !session?.websocket) {
       setIsReady(false);
-      return;
+      return () => {};
     }
 
     const { websocket } = session;
