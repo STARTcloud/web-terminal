@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.3](https://github.com/STARTcloud/web-terminal/compare/v0.1.2...v0.1.3) (2025-12-12)
+
+
+### Bug Fixes
+
+* translations ([b0926db](https://github.com/STARTcloud/web-terminal/commit/b0926dbf401b75db469634e34da35219a767fb03))
+
 ## [0.1.2](https://github.com/STARTcloud/web-terminal/compare/v0.1.1...v0.1.2) (2025-12-12)
 
 
