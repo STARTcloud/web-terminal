@@ -244,7 +244,7 @@ router.post('/start', requireAuthentication, async (req, res) => {
       terminal_cookie: req.body.terminal_cookie,
       error: error.message,
     });
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: 'Failed to start terminal session',
     });
