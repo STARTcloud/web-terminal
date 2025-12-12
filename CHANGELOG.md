@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.4](https://github.com/STARTcloud/web-terminal/compare/v0.1.3...v0.1.4) (2025-12-12)
+
+
+### Bug Fixes
+
+* typo in GH Action ([b093ec9](https://github.com/STARTcloud/web-terminal/commit/b093ec9c172a68b46d1d1cd728431ad7c2dee10f))
+
 ## [0.1.3](https://github.com/STARTcloud/web-terminal/compare/v0.1.2...v0.1.3) (2025-12-12)
 
 
