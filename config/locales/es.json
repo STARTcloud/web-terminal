@@ -1,0 +1,53 @@
+{
+  "api": {
+    "fileNotFound": "Archivo no encontrado",
+    "searchQueryRequired": "Se requiere consulta de búsqueda",
+    "authenticationRequired": "Se requiere autenticación",
+    "accessDenied": "Acceso denegado",
+    "adminPrivilegesRequired": "Se requieren privilegios de administrador",
+    "invalidCredentials": "Credenciales inválidas",
+    "sessionExpired": "Sesión expirada",
+    "insufficientPermissions": "Permisos insuficientes",
+    "internalServerError": "Error interno del servidor",
+    "operationSuccessful": "Operación completada exitosamente",
+    "operationFailed": "Operación fallida"
+  },
+  "files": {
+    "fileDeletedSuccessfully": "Archivo eliminado exitosamente",
+    "folderCreatedSuccessfully": "Carpeta creada exitosamente",
+    "fileRenamedSuccessfully": "Archivo renombrado exitosamente",
+    "filesMovedSuccessfully": "{{count}} elementos movidos exitosamente",
+    "uploadSuccessful": "Archivo subido exitosamente",
+    "uploadFailed": "Subida fallida",
+    "cannotDeleteDirectory": "No se puede eliminar el directorio",
+    "folderAlreadyExists": "La carpeta ya existe",
+    "folderCreationFailed": "Falló la creación de carpeta",
+    "nameRequired": "Se requiere nombre",
+    "invalidName": "Nombre inválido",
+    "cannotMoveFromRoot": "No se puede mover desde el directorio raíz",
+    "newNameRequired": "Se requiere nuevo nombre",
+    "fileOrFolderNotFound": "Archivo o carpeta no encontrado",
+    "fileOrFolderAlreadyExists": "Ya existe un archivo o carpeta con ese nombre",
+    "noFileUploaded": "No se subió ningún archivo",
+    "directoryDeletedSuccessfully": "Directorio eliminado exitosamente"
+  },
+  "validation": {
+    "required": "Este campo es requerido",
+    "invalid": "Valor inválido",
+    "tooShort": "El valor es demasiado corto",
+    "tooLong": "El valor es demasiado largo",
+    "invalidFormat": "Formato inválido"
+  },
+  "apiKeys": {
+    "apiKeyCreatedSuccessfully": "Clave API creada exitosamente",
+    "apiKeyDeletedSuccessfully": "Clave API eliminada exitosamente",
+    "apiKeyNotFound": "Clave API no encontrada",
+    "invalidApiKey": "Clave API inválida",
+    "apiKeyExpired": "Clave API expirada",
+    "fullKeyRetrievalDisabled": "La recuperación de clave completa está deshabilitada",
+    "keyNameRequired": "Se requiere nombre de clave",
+    "invalidPermissions": "Permisos inválidos",
+    "keyCreationFailed": "Falló la creación de clave API",
+    "keyDeletionFailed": "Falló la eliminación de clave API"
+  }
+}

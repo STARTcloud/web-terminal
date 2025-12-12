@@ -1,0 +1,53 @@
+{
+  "api": {
+    "fileNotFound": "File not found",
+    "searchQueryRequired": "Search query is required",
+    "authenticationRequired": "Authentication required",
+    "accessDenied": "Access denied",
+    "adminPrivilegesRequired": "Admin privileges required",
+    "invalidCredentials": "Invalid credentials",
+    "sessionExpired": "Session expired",
+    "insufficientPermissions": "Insufficient permissions",
+    "internalServerError": "Internal server error",
+    "operationSuccessful": "Operation completed successfully",
+    "operationFailed": "Operation failed"
+  },
+  "files": {
+    "fileDeletedSuccessfully": "File deleted successfully",
+    "folderCreatedSuccessfully": "Folder created successfully",
+    "fileRenamedSuccessfully": "File renamed successfully",
+    "filesMovedSuccessfully": "{{count}} items moved successfully",
+    "uploadSuccessful": "File uploaded successfully",
+    "uploadFailed": "Upload failed",
+    "cannotDeleteDirectory": "Cannot delete directory",
+    "folderAlreadyExists": "Folder already exists",
+    "folderCreationFailed": "Failed to create folder",
+    "nameRequired": "Name is required",
+    "invalidName": "Invalid name",
+    "cannotMoveFromRoot": "Cannot move from root directory",
+    "newNameRequired": "New name is required",
+    "fileOrFolderNotFound": "File or folder not found",
+    "fileOrFolderAlreadyExists": "A file or folder with that name already exists",
+    "noFileUploaded": "No file uploaded",
+    "directoryDeletedSuccessfully": "Directory deleted successfully"
+  },
+  "validation": {
+    "required": "This field is required",
+    "invalid": "Invalid value",
+    "tooShort": "Value is too short",
+    "tooLong": "Value is too long",
+    "invalidFormat": "Invalid format"
+  },
+  "apiKeys": {
+    "apiKeyCreatedSuccessfully": "API key created successfully",
+    "apiKeyDeletedSuccessfully": "API key deleted successfully",
+    "apiKeyNotFound": "API key not found",
+    "invalidApiKey": "Invalid API key",
+    "apiKeyExpired": "API key expired",
+    "fullKeyRetrievalDisabled": "Full key retrieval is disabled",
+    "keyNameRequired": "Key name is required",
+    "invalidPermissions": "Invalid permissions",
+    "keyCreationFailed": "Failed to create API key",
+    "keyDeletionFailed": "Failed to delete API key"
+  }
+}

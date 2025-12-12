@@ -1,0 +1,15 @@
+#!/bin/bash
+set -e
+
+# Stop and disable service before removal
+if systemctl is-active --quiet web-terminal; then
+    echo "Stopping Web-Terminal service..."
+    systemctl stop web-terminal
+fi
+
+if systemctl is-enabled --quiet web-terminal; then
+    echo "Disabling Web-Terminal service..."
+    systemctl disable web-terminal
+fi
+
+#DEBHELPER#

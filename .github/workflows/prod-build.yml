@@ -1,0 +1,257 @@
+name: Production Build
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        description: 'Version to build'
+        required: true
+        type: string
+      tag_name:
+        description: 'GitHub release tag'
+        required: true
+        type: string
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to build'
+        required: true
+        type: string
+      tag_name:
+        description: 'GitHub release tag'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  build-production-packages:
+    name: Packages
+    runs-on: self-hosted
+    steps:
+      # Debian Build Steps
+      - name: Checkout for Debian build
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm run cinstall:all
+
+      - name: Build frontend
+        run: npm run build
+
+      - name: Remove dev dependencies for packaging
+        run: |
+          # Remove dev dependencies after building but before packaging
+          rm -rf node_modules
+          npm run cinstall:backend:nodev
+          cd web && rm -rf node_modules && npm run cinstall:nodev
+
+      - name: Set Debian package variables
+        run: |
+          echo "VERSION=${{ inputs.version }}" >> $GITHUB_ENV
+          echo "PACKAGE_NAME=web-terminal" >> $GITHUB_ENV
+          echo "ARCH=amd64" >> $GITHUB_ENV
+          echo "TAG_NAME=${{ inputs.tag_name }}" >> $GITHUB_ENV
+
+      - name: Create Debian package structure
+        run: |
+          mkdir -p "${PACKAGE_NAME}_${VERSION}_${ARCH}"/{opt/web-terminal/web,opt/web-terminal,etc/systemd/system,var/lib/web-terminal,var/log/web-terminal,usr/share/man/man8,usr/share/man/man5,DEBIAN}
+
+      - name: Copy application files to Debian package
+        run: |
+          cp -r models routes middleware config utils services packaging app.js package.json "${PACKAGE_NAME}_${VERSION}_${ARCH}/opt/web-terminal/"
+          cp -r node_modules "${PACKAGE_NAME}_${VERSION}_${ARCH}/opt/web-terminal/"
+          cp -r web/dist "${PACKAGE_NAME}_${VERSION}_${ARCH}/opt/web-terminal/web/dist"
+          # Keep public assets for Swagger theming
+          cp -r web/public "${PACKAGE_NAME}_${VERSION}_${ARCH}/opt/web-terminal/web/public"
+
+      - name: Copy configuration files to Debian package
+        run: |
+          cp packaging/DEBIAN/systemd/web-terminal.service "${PACKAGE_NAME}_${VERSION}_${ARCH}/etc/systemd/system/"
+          cp packaging/DEBIAN/postinst packaging/DEBIAN/prerm packaging/DEBIAN/postrm "${PACKAGE_NAME}_${VERSION}_${ARCH}/DEBIAN/"
+
+      - name: Install man pages
+        run: |
+          # Copy and compress man pages following Debian Policy
+          gzip -9 -c packaging/DEBIAN/man/web-terminal.8 > "${PACKAGE_NAME}_${VERSION}_${ARCH}/usr/share/man/man8/web-terminal.8.gz"
+          gzip -9 -c packaging/DEBIAN/man/web-terminal.yaml.5 > "${PACKAGE_NAME}_${VERSION}_${ARCH}/usr/share/man/man5/web-terminal.yaml.5.gz"
+
+      - name: Create Debian control file
+        run: |
+          cat > "${PACKAGE_NAME}_${VERSION}_${ARCH}/DEBIAN/control" << EOF
+          Package: web-terminal
+          Version: ${VERSION}
+          Section: misc
+          Priority: optional
+          Architecture: ${ARCH}
+          Maintainer: MarkProminic <MarkProminic@users.noreply.github.com>
+          Depends: nodejs (>= 22.0.0), sqlite3, openssl
+          Description: Web-Terminal
+           A secure web-based terminal interface providing shell access through a browser with OIDC authentication and HTTPS encryption.
+          Homepage: https://github.com/STARTcloud/web-terminal
+          EOF
+
+      - name: Set Debian package permissions
+        run: |
+          find "${PACKAGE_NAME}_${VERSION}_${ARCH}" -type d -exec chmod 755 {} \;
+          find "${PACKAGE_NAME}_${VERSION}_${ARCH}" -type f -exec chmod 644 {} \;
+          chmod 755 "${PACKAGE_NAME}_${VERSION}_${ARCH}/DEBIAN"/{postinst,prerm,postrm}
+
+      - name: Build Debian package
+        run: |
+          dpkg-deb --build "${PACKAGE_NAME}_${VERSION}_${ARCH}" "${PACKAGE_NAME}_${VERSION}_${ARCH}.deb"
+
+      # OmniOS Build Steps
+      - name: Fresh checkout for OmniOS build
+        uses: actions/checkout@v5
+        with:
+          path: omnios-source
+          clean: true
+
+      - name: Clean OmniOS build directory
+        run: |
+          ssh ghrunner@omnios.packages.startcloud.com "rm -rf /local/builds/web-terminal/* /local/builds/web-terminal/.*" || true
+
+      - name: Sync source code to OmniOS
+        run: |
+          rsync -av \
+            --exclude='.git' \
+            --exclude='node_modules' \
+            --exclude='web/node_modules' \
+            --exclude='web/dist' \
+            --exclude='*.deb' \
+            omnios-source/ ghrunner@omnios.packages.startcloud.com:/local/builds/web-terminal/
+
+      - name: Build package on OmniOS
+        run: |
+          ssh ghrunner@omnios.packages.startcloud.com "
+            cd /local/builds/web-terminal && 
+            export PATH=/opt/ooce/bin:/opt/ooce/node-22/bin:\$PATH &&
+            export MAKE=gmake &&
+            chmod +x packaging/omnios/build.sh &&
+            ./packaging/omnios/build.sh
+          "
+
+      - name: Transfer OmniOS package back
+        run: |
+          rsync -av ghrunner@omnios.packages.startcloud.com:/local/builds/web-terminal/*.p5p ./ || echo "No .p5p files found"
+
+      - name: Install GitHub CLI
+        run: |
+          if ! command -v gh &> /dev/null; then
+            curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+            sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
+            echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+            sudo apt update
+            sudo apt install gh -y
+          fi
+
+      - name: Upload Debian package to release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release upload ${{ github.event.inputs.tag_name || env.TAG_NAME }} "${PACKAGE_NAME}_${VERSION}_${ARCH}.deb" --clobber
+
+      - name: Upload OmniOS package to release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          for file in *.p5p; do
+            if [ -f "$file" ]; then
+              echo "Uploading $file..."
+              gh release upload ${{ github.event.inputs.tag_name || env.TAG_NAME }} "$file" --clobber
+            fi
+          done
+
+      - name: Publish OmniOS package to repository
+        run: |
+          ssh ghrunner@omnios.packages.startcloud.com "
+            cd /local/builds/web-terminal &&
+            pfexec pkgsend publish -d proto -s file:///local/public/r151054/pkg web-terminal.p5m.final &&
+            pfexec pkgrepo refresh -s /local/public/r151054/pkg &&
+            pfexec svcadm restart pkg/server:r151054_STARTcloud
+          "
+
+      - name: Clean up OmniOS build directory
+        run: |
+          ssh ghrunner@omnios.packages.startcloud.com "rm -rf /local/builds/web-terminal/*"
+
+      - name: Upload Debian package to repository server
+        run: |
+          rsync -av web-terminal_*.deb startcloud@172.17.204.177:/tmp/
+
+      - name: Add package to repository pool
+        run: |
+          ssh startcloud@172.17.204.177 "
+            mkdir -p /local/public/debian/pool/main/z/web-terminal
+            cp /tmp/web-terminal_*.deb /local/public/debian/pool/main/z/web-terminal/
+          "
+
+      - name: Create multi-suite directory structure
+        run: |
+          ssh startcloud@172.17.204.177 "
+            cd /local/public/debian
+            # Create suite directories if they don't exist
+            mkdir -p dists/bookworm/main/binary-amd64
+            mkdir -p dists/trixie/main/binary-amd64
+          "
+
+      - name: Update repository Packages files for all suites
+        run: |
+          ssh startcloud@172.17.204.177 "
+            cd /local/public/debian
+            # Generate Packages files for each suite
+            for suite in bookworm trixie; do
+              dpkg-scanpackages --arch amd64 pool/ > dists/\$suite/main/binary-amd64/Packages
+              gzip -c dists/\$suite/main/binary-amd64/Packages > dists/\$suite/main/binary-amd64/Packages.gz
+            done
+          "
+
+      - name: Generate Release files for all suites
+        run: |
+          ssh startcloud@172.17.204.177 "
+            cd /local/public/debian
+            # Generate Release files for each suite
+            for suite in bookworm trixie; do
+              cd dists/\$suite
+              /local/generate-release.sh \$suite > Release
+              cd ../..
+            done
+          "
+
+      - name: Create stable distribution with proper Release file
+        run: |
+          ssh startcloud@172.17.204.177 "
+            cd /local/public/debian/dists
+            rm -rf stable 2>/dev/null || true
+            cp -r trixie stable
+            cd stable
+            /local/generate-release.sh stable > Release
+          "
+
+      - name: Sign repository for all suites including stable
+        run: |
+          ssh startcloud@172.17.204.177 "
+            cd /local/public/debian
+            # Sign each suite including stable
+            for suite in bookworm trixie stable; do
+              cd dists/\$suite
+              export GNUPGHOME=\$(mktemp -d /local/pgp/pgpkeys-XXXXXX)
+              cat /local/pgp/pgp-key.private | gpg --import
+              cat Release | gpg --default-key startcloud -abs > Release.gpg
+              cat Release | gpg --default-key startcloud -abs --clearsign > InRelease
+              rm -rf \$GNUPGHOME
+              cd ../..
+            done
+          "
+
+      - name: Cleanup temporary files
+        run: |
+          ssh startcloud@172.17.204.177 "rm -f /tmp/web-terminal_*.deb"

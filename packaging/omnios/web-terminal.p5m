@@ -1,0 +1,99 @@
+#
+# This file and its contents are supplied under the terms of the
+# Common Development and Distribution License ("CDDL"), version 1.0.
+# You may only use this file in accordance with the terms of version
+# 1.0 of the CDDL.
+#
+# A full copy of the text of the CDDL should have accompanied this
+# source.  A copy of the CDDL is also available via the Internet at
+# http://www.illumos.org/license/CDDL.
+#
+
+set name=pkg.fmri value=application/management/web-terminal@@VERSION@
+set name=pkg.summary value="Web-Terminal"
+set name=pkg.description value="Web-based terminal interface with OIDC authentication."
+set name=info.classification value=org.opensolaris.category.2008:System/Virtualization
+set name=info.upstream value="Web-Terminal Project"
+set name=info.upstream-url value="https://github.com/STARTcloud/web-terminal"
+
+# Dependencies
+depend fmri=ooce/runtime/node-22 type=require
+
+# Create wtuser user and group
+user username=wtuser uid=306 group=wtuser gcos-field="Web-Terminal Service User" \
+    home-dir=/var/lib/web-terminal login-shell=/usr/bin/pfksh
+group groupname=wtuser gid=306
+
+# License
+license opt/web-terminal/LICENSE.md license="GPL-3.0" must-accept=false
+
+# Drop system directories that already exist (avoid conflicts with system packages)
+<transform dir path=^opt$ -> drop>
+<transform dir path=^etc$ -> drop>
+<transform dir path=^var$ -> drop>
+<transform dir path=^lib$ -> drop>
+<transform dir path=lib/svc$ -> drop>
+<transform dir path=lib/svc/manifest$ -> drop>
+<transform dir path=lib/svc/manifest/system$ -> drop>
+<transform dir path=var/lib$ -> drop>
+<transform dir path=var/log$ -> drop>
+
+# Transform rules to set ownership and permissions for auto-generated files
+
+<transform dir path=opt/web-terminal$ -> set owner wtuser>
+<transform dir path=opt/web-terminal$ -> set group wtuser>
+<transform dir path=opt/web-terminal$ -> set mode 0755>
+
+<transform dir path=opt/web-terminal/.* -> set owner wtuser>
+<transform dir path=opt/web-terminal/.* -> set group wtuser>
+<transform dir path=opt/web-terminal/.* -> set mode 0755>
+
+<transform file path=opt/web-terminal/.* -> set owner wtuser>
+<transform file path=opt/web-terminal/.* -> set group wtuser>
+<transform file path=opt/web-terminal/.* -> set mode 0644>
+
+# SMF method scripts need to be executable by root
+<transform file path=opt/web-terminal/startup.sh -> set owner root>
+<transform file path=opt/web-terminal/startup.sh -> set group sys>
+<transform file path=opt/web-terminal/startup.sh -> set mode 0755>
+
+<transform file path=opt/web-terminal/shutdown.sh -> set owner root>
+<transform file path=opt/web-terminal/shutdown.sh -> set group sys>
+<transform file path=opt/web-terminal/shutdown.sh -> set mode 0755>
+
+<transform file path=opt/web-terminal/post-install.sh -> set owner root>
+<transform file path=opt/web-terminal/post-install.sh -> set group sys>
+<transform file path=opt/web-terminal/post-install.sh -> set mode 0755>
+
+# Make scripts and node binaries executable
+<transform file path=opt/web-terminal/scripts/.* -> set mode 0755>
+<transform file path=opt/web-terminal/node_modules/.*/bin/.* -> set mode 0755>
+
+# Configuration directory and files (config file preserved via preserve=true)
+<transform dir path=etc/web-terminal$ -> set owner wtuser>
+<transform dir path=etc/web-terminal$ -> set group wtuser>
+<transform dir path=etc/web-terminal$ -> set mode 0755>
+
+# SSL and database directories (empty) - keeps persistent data in place on uninstall
+<transform dir path=etc/web-terminal/ssl -> set owner wtuser>
+<transform dir path=etc/web-terminal/ssl -> set group wtuser>
+<transform dir path=etc/web-terminal/ssl -> set mode 0700>
+
+<transform dir path=var/lib/web-terminal$ -> set owner wtuser>
+<transform dir path=var/lib/web-terminal$ -> set group wtuser>
+<transform dir path=var/lib/web-terminal$ -> set mode 0755>
+
+<transform dir path=var/lib/web-terminal/database -> set owner wtuser>
+<transform dir path=var/lib/web-terminal/database -> set group wtuser>
+<transform dir path=var/lib/web-terminal/database -> set mode 0755>
+
+# Log directory (packaged content to avoid permission issues)
+<transform dir path=var/log/web-terminal -> set owner wtuser>
+<transform dir path=var/log/web-terminal -> set group wtuser>
+<transform dir path=var/log/web-terminal -> set mode 0755>
+
+# SMF manifest
+<transform file path=lib/svc/manifest/system/web-terminal.xml -> set owner root>
+<transform file path=lib/svc/manifest/system/web-terminal.xml -> set group sys>
+<transform file path=lib/svc/manifest/system/web-terminal.xml -> set mode 0644>
+<transform file path=lib/svc/manifest/system/web-terminal.xml -> set restart_fmri svc:/system/manifest-import:default>

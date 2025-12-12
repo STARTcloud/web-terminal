@@ -1,0 +1,67 @@
+<?xml version='1.0'?>
+<!DOCTYPE service_bundle SYSTEM '/usr/share/lib/xml/dtd/service_bundle.dtd.1'>
+<!--
+    SMF manifest for Web-Terminal
+-->
+<service_bundle type='manifest' name='web-terminal'>
+  <service name='application/management/web-terminal' type='service' version='1'>
+    <create_default_instance enabled='false'/>
+    <single_instance/>
+    
+    <!-- Dependencies -->
+    <dependency name='filesystems' grouping='require_all' restart_on='none' type='service'>
+      <service_fmri value='svc:/system/filesystem/local:default'/>
+    </dependency>
+    
+    <dependency name='network' grouping='require_all' restart_on='none' type='service'>
+      <service_fmri value='svc:/milestone/network:default'/>
+    </dependency>
+    
+    <!-- Start method -->
+    <exec_method name='start' type='method' exec='/opt/web-terminal/startup.sh' timeout_seconds='60'>
+      <method_context working_directory='/opt/web-terminal'>
+        <method_credential user='wtuser' group='wtuser' 
+            privileges='basic,net_privaddr,file_dac_read' />
+        <method_environment>
+          <envvar name='PATH' value='/opt/ooce/bin:/opt/ooce/node-22/bin:/usr/gnu/bin:/usr/bin:/usr/sbin:/sbin'/>
+          <envvar name='NODE_ENV' value='production'/>
+          <envvar name='CONFIG_PATH' value='/etc/web-terminal/config.yaml'/>
+          <envvar name='HOME' value='/var/lib/web-terminal'/>
+        </method_environment>
+      </method_context>
+    </exec_method>
+    
+    <!-- Stop method -->
+    <exec_method name='stop' type='method' exec='/opt/web-terminal/shutdown.sh' timeout_seconds='30'>
+      <method_context working_directory='/opt/web-terminal'>
+        <method_credential user='wtuser' group='wtuser' />
+        <method_environment>
+          <envvar name='PATH' value='/opt/ooce/bin:/opt/ooce/node-22/bin:/usr/bin:/usr/sbin:/sbin'/>
+        </method_environment>
+      </method_context>
+    </exec_method>
+    
+    <!-- Refresh method -->
+    <exec_method name='refresh' type='method' exec=':kill -HUP' timeout_seconds='30' />
+    
+    <!-- Stability -->
+    <stability value='Evolving' />
+    
+    <!-- Service description -->
+    <template>
+      <common_name>
+        <loctext xml:lang='C'>Web-Terminal</loctext>
+      </common_name>
+      <description>
+        <loctext xml:lang='C'>
+          Web-based terminal interface with OIDC authentication
+        </loctext>
+      </description>
+      <documentation>
+        <manpage title='web-terminal' section='8' />
+        <doc_link name='Web-Terminal Project'
+                  uri='https://github.com/STARTcloud/web-terminal' />
+      </documentation>
+    </template>
+  </service>
+</service_bundle>

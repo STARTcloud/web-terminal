@@ -1,0 +1,263 @@
+.Dd $Mdocdate$
+.Dt WEB-TERMINAL.YAML 5
+.Os
+.Sh NAME
+.Nm web-terminal.yaml
+.Nd configuration file for Web-Terminal web interface
+.Sh DESCRIPTION
+The
+.Nm
+file is the main configuration file for Web-Terminal.
+It is written in YAML format and controls all aspects of the service
+operation including network settings, user authentication, OIDC providers,
+terminal settings, and security configuration.
+.Pp
+The configuration file is typically located at:
+.Pa /etc/web-terminal/config.yaml
+.Sh CONFIGURATION SECTIONS
+The configuration file is organized into logical sections that control
+different aspects of the frontend service operation.
+.Ss app
+Basic application identification and settings.
+.Bl -tag -width "frontend_url"
+.It Cm name
+String specifying the application name (default: "Web-Terminal")
+.It Cm version
+String specifying the application version (e.g., "0.7.5")
+.It Cm frontend_url
+Base URL where the frontend is accessible (e.g., "https://localhost:PORT")
+.El
+.Ss server
+HTTP and HTTPS server configuration.
+.Bl -tag -width "hostname"
+.It Cm hostname
+Hostname or IP address to bind the server to (default: "localhost")
+.It Cm port
+TCP port number for the web server (configurable)
+.El
+.Ss ssl
+SSL/TLS certificate and encryption settings.
+.Bl -tag -width "generate_ssl"
+.It Cm enabled
+Boolean enabling HTTPS server (default: true)
+.It Cm generate_ssl
+Boolean enabling automatic self-signed certificate generation (default: true)
+.It Cm key
+Filesystem path to SSL private key file
+.It Cm cert
+Filesystem path to SSL certificate file
+.El
+.Pp
+When
+.Cm generate_ssl
+is enabled, the service will automatically create self-signed certificates
+if they do not exist at the specified paths.
+.Ss terminal
+Terminal settings and behavior.
+.Bl -tag -width "timeout_minutes"
+.It Cm shell
+Shell command to spawn (e.g., "bash", "zsh", "powershell.exe")
+.It Cm cols
+Terminal width in columns (default: 80)
+.It Cm rows
+Terminal height in rows (default: 30)
+.It Cm timeout_minutes
+Idle timeout in minutes before auto-closing session (optional)
+.El
+.Ss authentication
+User authentication and security configuration.
+.Bl -tag -width "jwt_expiration"
+.It Cm jwt_secret
+Secret key for JWT token signing (must be kept secure)
+.It Cm jwt_expiration
+JWT token expiration time (e.g., "24h", "7d")
+.It Cm oidc_global_hidden
+Boolean to hide all OIDC providers by default
+.It Cm basic_auth_hidden
+Boolean to hide basic authentication option
+.It Cm permission_strategy
+Permission strategy: "domain_based" or "claims_based"
+.El
+.Ss database
+Database configuration and storage settings.
+.Bl -tag -width "path"
+.It Cm path
+Filesystem path to SQLite database file (e.g., "/var/lib/web-terminal/database/web-terminal.db")
+.El
+.Ss cors
+Cross-Origin Resource Sharing (CORS) configuration for web security.
+.Bl -tag -width "whitelist"
+.It Cm whitelist
+Array of allowed origin URLs for CORS requests. Only origins listed here
+can access the API from web browsers.
+.It Cm options
+CORS behavior options:
+.Bl -tag -width "preflightContinue" -offset indent
+.It Cm origin
+Boolean or specific origin validation (default: true)
+.It Cm preflightContinue
+Boolean to pass preflight response to next handler (default: true)
+.It Cm credentials
+Boolean to enable credential sharing (default: true)
+.El
+.El
+.Ss logging
+Logging configuration and verbosity control.
+.Bl -tag -width "log_directory"
+.It Cm log_directory
+Directory path for log files (e.g., "/var/log/web-terminal")
+.It Cm log_level
+Logging level ("error", "warn", "info", "debug") (default: "info")
+.It Cm max_files
+Number of rotated log files to keep (default: 5)
+.It Cm enable_rotation
+Boolean enabling daily log rotation (default: true)
+.It Cm enable_compression
+Boolean enabling compression of old logs (default: true)
+.El
+.Sh FILES
+.Bl -tag -width ".Pa /var/lib/web-terminal/"
+.It Pa /etc/web-terminal/config.yaml
+Default configuration file location
+.It Pa /etc/web-terminal/ssl/
+SSL certificate directory
+.It Pa /var/lib/web-terminal/database/
+Database storage directory
+.It Pa /var/log/web-terminal/
+Log file directory
+.El
+.Sh EXAMPLES
+Minimal configuration for development:
+.Bd -literal -offset indent
+server:
+  domain: "localhost"
+  port: 443
+
+ssl:
+  cert: ./ssl/cert.pem
+  key: ./ssl/key.pem
+
+authentication:
+  jwt_secret: "change-this-to-a-secure-random-string"
+  jwt_expiration: "24h"
+  local:
+    users:
+      - username: admin
+        password: admin123
+        role: admin
+        id: 1
+
+terminal:
+  shell: bash
+  cols: 80
+  rows: 30
+
+database:
+  storage: ./users.db
+.Ed
+.Pp
+Production configuration with OIDC and security:
+.Bd -literal -offset indent
+server:
+  domain: "terminal.example.com"
+  port: 443
+
+ssl:
+  cert: /etc/letsencrypt/live/terminal.example.com/fullchain.pem
+  key: /etc/letsencrypt/live/terminal.example.com/privkey.pem
+
+authentication:
+  jwt_secret: "very-long-secure-random-string-here"
+  jwt_expiration: "24h"
+  
+  oidc_providers:
+    google:
+      enabled: true
+      display_name: "Sign in with Google"
+      issuer: "https://accounts.google.com"
+      client_id: "your-client-id"
+      client_secret: "your-client-secret"
+      scope: "openid email profile"
+  
+  permission_strategy: "domain_based"
+  domain_mappings:
+    terminal_access: ["*@example.com"]
+    terminal_admin: ["admin@example.com"]
+
+terminal:
+  shell: bash
+  cols: 120
+  rows: 40
+
+database:
+  storage: /var/lib/web-terminal/users.db
+
+logging:
+  log_directory: /var/log/web-terminal
+  log_level: warn
+.Ed
+.Sh DIAGNOSTICS
+Configuration file syntax errors will prevent the service from starting.
+Check the SMF service logs for detailed error information:
+.Pp
+.Dl # svcs -L web-terminal
+.Pp
+Common configuration issues:
+.Bl -bullet -offset indent
+.It
+Invalid YAML syntax (indentation, special characters)
+.It
+Non-existent file paths for SSL certificates or database storage
+.It
+Port conflicts with other services
+.It
+Insufficient filesystem permissions for specified directories
+.It
+Invalid CORS origin URLs
+.It
+Weak or missing JWT secret configuration
+.It
+OIDC provider misconfiguration (invalid issuer, client credentials)
+.El
+.Sh SEE ALSO
+.Xr web-terminal 8 ,
+.Xr yaml 7 ,
+.Xr svcadm 8 ,
+.Xr svcs 1
+.Sh STANDARDS
+The configuration file uses YAML 1.2 format as defined by the YAML specification.
+SSL/TLS settings follow standard OpenSSL certificate formats.
+.Sh SECURITY CONSIDERATIONS
+The configuration file contains sensitive information:
+.Bl -bullet -offset indent
+.It
+JWT secret key for token signing
+.It
+OIDC client credentials (client_id and client_secret)
+.It
+SSL certificate and key file paths
+.It
+Database storage locations
+.It
+CORS origin whitelist defining trusted frontend URLs
+.El
+.Pp
+Recommended security practices:
+.Bl -bullet -offset indent
+.It
+Set restrictive filesystem permissions (mode 0600) on configuration files
+.It
+Use strong, randomly generated JWT secrets (32+ characters)
+.It
+Use strong SSL certificates from a trusted Certificate Authority in production
+.It
+Configure CORS whitelist to include only necessary origins
+.It
+Protect OIDC client secrets and rotate regularly
+.It
+Regularly rotate JWT secrets and invalidate existing sessions
+.It
+Monitor user access patterns and failed authentication attempts
+.It
+Enable backchannel logout for enhanced security with OIDC providers
+.El
