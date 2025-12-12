@@ -42,7 +42,7 @@ const TerminalPage = () => {
     }
   }, [instance, ref?.current]);
 
-  // Load basic addons
+  // Load basic addons and set up resize handler
   useEffect(() => {
     if (instance) {
       try {
@@ -50,8 +50,9 @@ const TerminalPage = () => {
         instance.loadAddon(addonsRef.current.webLinksAddon);
         addonsRef.current.fitAddon.fit();
 
-        // Send resize to backend when terminal dimensions change
+        // Set up resize handler - will fire when fit() is called
         instance.onResize(({ cols, rows }) => {
+          // Send to backend if websocket is ready
           if (session?.websocket?.readyState === WebSocket.OPEN) {
             session.websocket.send(
               JSON.stringify({ type: "resize", cols, rows })
@@ -82,10 +83,16 @@ const TerminalPage = () => {
           setIsReady(true);
           console.log("Terminal attached to WebSocket");
 
-          // Fit terminal after attach to ensure proper sizing
+          // Fit terminal and send initial resize AFTER attach
           setTimeout(() => {
             if (addonsRef.current?.fitAddon) {
               addonsRef.current.fitAddon.fit();
+              
+              // Explicitly send resize after fit() completes
+              const cols = instance.cols;
+              const rows = instance.rows;
+              websocket.send(JSON.stringify({ type: "resize", cols, rows }));
+              console.log("Sent initial resize to backend:", { cols, rows });
             }
           }, 100);
 
