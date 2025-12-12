@@ -176,10 +176,23 @@ export const configAwareI18nMiddleware = (req, res, next) => {
 };
 
 // Helper function to get translated message
-export const t = (key, locale = 'en', replacements = {}) => {
+export const t = (key, localeOrReplacements = 'en', replacements = {}) => {
   const originalLocale = i18n.getLocale();
+  
+  // Handle case where second parameter is replacements object instead of locale
+  let locale = 'en';
+  let actualReplacements = {};
+  
+  if (typeof localeOrReplacements === 'string') {
+    locale = localeOrReplacements;
+    actualReplacements = replacements;
+  } else if (typeof localeOrReplacements === 'object') {
+    locale = originalLocale || 'en';
+    actualReplacements = localeOrReplacements;
+  }
+  
   i18n.setLocale(locale);
-  const message = i18n.__(key, replacements);
+  const message = i18n.__(key, actualReplacements);
   i18n.setLocale(originalLocale);
   return message;
 };
