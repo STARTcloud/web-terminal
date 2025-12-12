@@ -162,7 +162,7 @@ router.post('/start', requireAuthentication, async (req, res) => {
     });
 
     if (existingSession) {
-      const isHealthy = await isSessionHealthy(existingSession.id);
+      const isHealthy = isSessionHealthy(existingSession.id);
 
       if (isHealthy) {
         await existingSession.update({
