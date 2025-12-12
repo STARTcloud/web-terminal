@@ -228,7 +228,7 @@ router.post('/start', requireAuthentication, async (req, res) => {
       });
     });
 
-    res.json({
+    return res.json({
       success: true,
       data: {
         id: session.terminal_cookie,
