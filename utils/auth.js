@@ -1,7 +1,4 @@
-import { promises as fs } from 'fs';
-import { join } from 'path';
 import configLoader from '../config/configLoader.js';
-import logger from '../config/logger.js';
 
 /**
  * Validate user credentials against local users in config
@@ -20,8 +17,7 @@ export const isValidUser = credentials => {
  * Get user permissions (simplified for terminal app)
  * Returns empty array since authentication is binary: authenticated = can access terminal
  */
-export const getUserPermissions = user => {
+export const getUserPermissions = () =>
   // Simplified: Permissions kept in JWT for future extensibility but not actively used
   // Authentication is handled by requireAuthentication middleware
-  return [];
-};
+  [];

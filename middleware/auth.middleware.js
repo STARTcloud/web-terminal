@@ -1,7 +1,5 @@
-import auth from 'basic-auth';
 import jwt from 'jsonwebtoken';
 import configLoader from '../config/configLoader.js';
-import { isValidUser, getUserPermissions } from '../utils/auth.js';
 import { logAccess, authLogger as logger } from '../config/logger.js';
 
 const checkJwtAuth = req => {

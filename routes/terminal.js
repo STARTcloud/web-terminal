@@ -13,7 +13,7 @@ const SESSION_TIMEOUT_MINUTES = 30;
 
 const activePtyProcesses = new Map();
 
-const isSessionHealthy = async sessionId => {
+const isSessionHealthy = sessionId => {
   try {
     const ptyProcess = activePtyProcesses.get(sessionId);
     if (!ptyProcess) {
@@ -23,7 +23,8 @@ const isSessionHealthy = async sessionId => {
     try {
       process.kill(ptyProcess.pid, 0);
       return true;
-    } catch (error) {
+    } catch (pidError) {
+      logger.debug('Process no longer exists', { pid: ptyProcess.pid, error: pidError.message });
       activePtyProcesses.delete(sessionId);
       return false;
     }
@@ -106,18 +107,21 @@ const cleanupInactiveSessions = async () => {
       },
     });
 
-    let cleanedCount = 0;
+    // Kill PTY processes and collect update promises
+    const updatePromises = [];
     for (const session of inactiveSessions) {
       const ptyProcess = activePtyProcesses.get(session.id);
       if (ptyProcess) {
         ptyProcess.kill();
         activePtyProcesses.delete(session.id);
       }
-
-      await session.update({ status: 'closed' });
-      cleanedCount++;
+      updatePromises.push(session.update({ status: 'closed' }));
     }
 
+    // Update all sessions in parallel
+    await Promise.all(updatePromises);
+
+    const cleanedCount = inactiveSessions.length;
     if (cleanedCount > 0) {
       logger.info('Terminal cleanup completed', {
         cleaned_sessions: cleanedCount,
@@ -249,6 +253,7 @@ router.post('/start', requireAuthentication, async (req, res) => {
 
 router.get('/sessions', requireAuthentication, async (req, res) => {
   try {
+    logger.debug('Listing terminal sessions', { user: req.user?.email || req.user?.username });
     const TerminalSession = getTerminalSessionModel();
     const sessions = await TerminalSession.findAll({
       order: [['created_at', 'DESC']],

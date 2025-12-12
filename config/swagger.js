@@ -7,8 +7,7 @@ const options = {
     info: {
       title: 'Web-Terminal',
       version: '0.1.1',
-      description:
-        'Web-Terminal - Web based Terminal',
+      description: 'Web-Terminal - Web based Terminal',
       license: {
         name: 'GPL-3.0',
         url: 'https://www.gnu.org/licenses/gpl-3.0.html',

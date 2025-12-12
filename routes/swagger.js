@@ -1,5 +1,4 @@
 import express from 'express';
-import configLoader from '../config/configLoader.js';
 import { specs } from '../config/swagger.js';
 import { logger } from '../config/logger.js';
 import { getSupportedLocales, getDefaultLocale } from '../config/i18n.js';

@@ -17,10 +17,9 @@ import { rateLimiterMiddleware } from './middleware/rateLimiter.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import authRoutes from './routes/auth.js';
 import swaggerRoutes from './routes/swagger.js';
-import terminalRoutes from './routes/terminal.js';
+import terminalRoutes, { getPtyProcess } from './routes/terminal.js';
 import { setupHTTPSServer } from './utils/sslManager.js';
 import { checkTokenRevocation } from './middleware/tokenRevocation.js';
-import { getPtyProcess } from './routes/terminal.js';
 
 const app = express();
 
@@ -245,7 +244,7 @@ const startServer = async () => {
     httpsServer.on('upgrade', async (request, socket, head) => {
       try {
         const url = new URL(request.url, `https://${request.headers.host}`);
-        const termMatch = url.pathname.match(/^\/ws\/terminal\/([^/]+)$/);
+        const termMatch = url.pathname.match(/^\/ws\/terminal\/(?<sessionId>[^/]+)$/);
 
         if (!termMatch) {
           logger.debug('WebSocket upgrade rejected: URL does not match terminal pattern', {
@@ -255,7 +254,7 @@ const startServer = async () => {
           return;
         }
 
-        const sessionId = termMatch[1];
+        const { sessionId } = termMatch.groups;
         const ptyProcess = getPtyProcess(sessionId);
 
         if (!ptyProcess) {
@@ -319,8 +318,6 @@ const startServer = async () => {
 };
 
 startServer();
-
-
 
 //######################## ORIGINAL Code in server.js ########################//
 //import express from 'express';

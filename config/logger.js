@@ -140,13 +140,7 @@ try {
   }
 
   // Rotate existing logs synchronously before creating new transports
-  const logFiles = [
-    'app.log',
-    'access.log',
-    'database.log',
-    'error.log',
-    'auth.log',
-  ];
+  const logFiles = ['app.log', 'access.log', 'database.log', 'error.log', 'auth.log'];
   for (const logFile of logFiles) {
     const logPath = join(logDir, logFile);
     if (existsSync(logPath)) {
@@ -268,7 +262,6 @@ export const morganMiddleware = morgan('combined', {
 
 export { logger, accessLogger, databaseLogger, authLogger };
 export default logger;
-
 
 // Old Logger Code - Kept for reference
 //import winston from 'winston';
