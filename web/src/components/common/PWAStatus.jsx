@@ -96,7 +96,6 @@ const PWAStatus = () => {
         </span>
       ) : null}
 
-
       {/* Toast Notifications */}
       <ToastContainer position="top-end" className="p-3">
         {/* Offline Notification */}

@@ -3,7 +3,6 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
 import api from "../../utils/api";
-import { useAuth } from "../auth/AuthContext";
 import Footer from "../layout/Footer";
 
 const getConfigValue = (config, uiKey, fallbackKey, defaultValue) =>

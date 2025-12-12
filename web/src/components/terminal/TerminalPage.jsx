@@ -5,8 +5,8 @@ import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useXTerm } from "react-xtermjs";
 
-import { useAuth } from "../auth/AuthContext";
 import { useTerminal } from "../../contexts/TerminalContext";
+import { useAuth } from "../auth/AuthContext";
 
 const TerminalPage = () => {
   const { user, logout } = useAuth();
@@ -113,6 +113,7 @@ const TerminalPage = () => {
     // Listen for websocket events
     const onOpen = () => {
       attachWhenReady();
+      return undefined;
     };
 
     const onClose = () => {
