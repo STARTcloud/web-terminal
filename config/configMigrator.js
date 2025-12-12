@@ -73,9 +73,9 @@ class ConfigMigrator {
 
     console.log(t('config.migrationNeeded', { reason: migrationCheck.reason }));
     console.log(
-      t('config.versionInfo', { 
-        appVersion: migrationCheck.appVersion, 
-        configVersion: migrationCheck.configVersion || 'none' 
+      t('config.versionInfo', {
+        appVersion: migrationCheck.appVersion,
+        configVersion: migrationCheck.configVersion || 'none',
       })
     );
 
