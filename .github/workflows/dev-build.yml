@@ -183,7 +183,7 @@ jobs:
           # Create or update draft release for development version
           RELEASE_TAG="v${VERSION}-dev"
           RELEASE_TITLE="Development Release ${VERSION}"
-          RELEASE_NOTES="🚧 **Development Release** 🚧"
+          RELEASE_NOTES="🚧 **Development Release** 🚧
 
           This is an automated development build from the main branch.
 
@@ -194,7 +194,7 @@ jobs:
           ⚠️ **Warning**: This is a development release for testing purposes only. Use production releases for stable deployments.
 
           ## Packages
-          - \`web-terminal-dev_${VERSION}_amd64.deb\` - Debian package
+          - \`web-terminal-dev_${VERSION}_amd64.deb\` - Debian package"
 
           # Delete existing dev release if it exists
           gh release delete "$RELEASE_TAG" --yes || true
