@@ -17,7 +17,9 @@
     if (window.location.pathname.includes('/releases/')) {
       var releaseDiv = document.getElementById('latest-release-content');
       if (releaseDiv) {
-        fetch('https://raw.githubusercontent.com/STARTcloud/web-terminal/refs/heads/main/package.json')
+        fetch(
+          'https://raw.githubusercontent.com/STARTcloud/web-terminal/refs/heads/main/package.json'
+        )
           .then(function (response) {
             return response.json();
           })
@@ -50,7 +52,9 @@
     if (window.location.pathname.includes('/changelog/')) {
       var releaseDiv = document.getElementById('latest-release-content');
       if (releaseDiv) {
-        fetch('https://raw.githubusercontent.com/STARTcloud/web-terminal/refs/heads/main/package.json')
+        fetch(
+          'https://raw.githubusercontent.com/STARTcloud/web-terminal/refs/heads/main/package.json'
+        )
           .then(function (response) {
             return response.json();
           })
