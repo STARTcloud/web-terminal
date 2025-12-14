@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.8](https://github.com/STARTcloud/web-terminal/compare/v0.1.7...v0.1.8) (2025-12-14)
+
+
+### Bug Fixes
+
+* navigation render ([919bc19](https://github.com/STARTcloud/web-terminal/commit/919bc1904d2e7ca5b08b767a1164ba7969302242))
+
 ## [0.1.7](https://github.com/STARTcloud/web-terminal/compare/v0.1.6...v0.1.7) (2025-12-14)
 
 
