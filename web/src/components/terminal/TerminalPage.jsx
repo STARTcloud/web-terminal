@@ -3,7 +3,7 @@ import { FitAddon } from "@xterm/addon-fit";
 import { WebLinksAddon } from "@xterm/addon-web-links";
 import { useEffect, useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { useXTerm } from "react-xtermjs";
 
 import { useTerminal } from "../../contexts/TerminalContext";
@@ -13,7 +13,6 @@ const TerminalPage = () => {
   const { t } = useTranslation(["common", "terminal"]);
   const { user, logout } = useAuth();
   const { session, createSession, restartSession } = useTerminal();
-  const navigate = useNavigate();
   const { instance, ref } = useXTerm();
   const addonsRef = useRef(null);
   const attachAddonRef = useRef(null);
@@ -143,8 +142,7 @@ const TerminalPage = () => {
   }, [instance]);
 
   if (!user) {
-    navigate("/login");
-    return null;
+    return <Navigate to="/login" replace />;
   }
 
   return (
