@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.5](https://github.com/STARTcloud/web-terminal/compare/v0.1.4...v0.1.5) (2025-12-14)
+
+
+### Bug Fixes
+
+* systemd service Allow sudo ([aa4f701](https://github.com/STARTcloud/web-terminal/commit/aa4f701428eb62a2e9e9d7347cbf25d3abfd88ca))
+
 ## [0.1.4](https://github.com/STARTcloud/web-terminal/compare/v0.1.3...v0.1.4) (2025-12-12)
 
 
