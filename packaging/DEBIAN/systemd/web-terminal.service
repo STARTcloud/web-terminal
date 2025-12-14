@@ -16,7 +16,7 @@ Restart=on-failure
 RestartSec=10
 
 # Security settings
-NoNewPrivileges=yes
+NoNewPrivileges=no
 ProtectSystem=strict
 ProtectHome=yes
 ReadWritePaths=/var/lib/web-terminal /var/log/web-terminal /etc/web-terminal
