@@ -22,8 +22,10 @@ mkdir -p /etc/web-terminal/ssl
 chown -R wtuser:wtuser /etc/web-terminal
 chmod 700 /etc/web-terminal/ssl
 
-# Reload systemd daemon
-systemctl daemon-reload
+# Reload systemd daemon (only if systemd is available)
+if [ -d /run/systemd/system ]; then
+    systemctl daemon-reload
+fi
 
 echo ""
 echo "======================================================================"

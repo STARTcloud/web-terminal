@@ -31,7 +31,9 @@ case "$1" in
         ;;
 esac
 
-# Reload systemd daemon
-systemctl daemon-reload || true
+# Reload systemd daemon (only if systemd is available)
+if [ -d /run/systemd/system ]; then
+    systemctl daemon-reload || true
+fi
 
 #DEBHELPER#
