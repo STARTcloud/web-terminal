@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.9](https://github.com/STARTcloud/web-terminal/compare/v0.1.8...v0.1.9) (2025-12-15)
+
+
+### Bug Fixes
+
+* allow installation in a docker container ([dbcaaa4](https://github.com/STARTcloud/web-terminal/commit/dbcaaa42e01b58e1812cc3b6ad315fe174430995))
+
 ## [0.1.8](https://github.com/STARTcloud/web-terminal/compare/v0.1.7...v0.1.8) (2025-12-14)
 
 
