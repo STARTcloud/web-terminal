@@ -1,6 +1,6 @@
 {
   "name": "web-terminal",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "description": "Web-based terminal interface",
   "license": "GPL-3.0",
   "type": "module",
