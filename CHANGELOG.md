@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.10](https://github.com/STARTcloud/web-terminal/compare/v0.1.9...v0.1.10) (2025-12-15)
+
+
+### Bug Fixes
+
+* package-lock ([9c6ff7a](https://github.com/STARTcloud/web-terminal/commit/9c6ff7af591afbdee6f4bbc093b8c99cfdd8c305))
+
 ## [0.1.9](https://github.com/STARTcloud/web-terminal/compare/v0.1.8...v0.1.9) (2025-12-15)
 
 
