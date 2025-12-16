@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.11](https://github.com/STARTcloud/web-terminal/compare/v0.1.10...v0.1.11) (2025-12-16)
+
+
+### Bug Fixes
+
+* docker environment variable for Port for GCR deployment ([cb64b0e](https://github.com/STARTcloud/web-terminal/commit/cb64b0e5d0955bd2e9e8267f6d3444e13a01627d))
+
 ## [0.1.10](https://github.com/STARTcloud/web-terminal/compare/v0.1.9...v0.1.10) (2025-12-15)
 
 
