@@ -27,7 +27,7 @@ const startServer = async () => {
   configLoader.load();
 
   const serverPortConfig = configLoader.getServerConfig();
-  const port = process.env.PORT || serverPortConfig.port || 443;
+  const port = serverPortConfig.port || process.env.WEB_TERMINAL_PORT || 8090;
 
   await initializeDatabase();
 
